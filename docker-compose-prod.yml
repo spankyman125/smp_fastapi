@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+
+  uvicorn:
+    build:
+      context: .
+      dockerfile: Dockerfile-uvicorn-dev
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./app:/container/app
+    # links:
+      # postgres
+  # postgres: 
+  #   image: postgres:14.0-alpine
+  #   restart: always
+  #   volumes: 
+  #     - ./postgres:/var/lib/postgresql/data:rw
+  #   environment:
+  #     POSTGRES_USER: TODO
+  #     POSTGRES_PASSWORD: TODO
+  #     POSTGRES_DB: TODO
+  #     PGDATA: TODO
+  #   ports:
+  #       - "5432:5432"
