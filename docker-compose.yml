@@ -18,8 +18,8 @@ services:
   postgres: 
     image: postgres:14.0-alpine
     restart: always
-    volumes: 
-      - ./backend/postgres:/var/lib/postgresql/data:rw
+    # volumes: 
+      # - ./backend/postgres:/var/lib/postgresql/data:rw no data save
     environment:
       POSTGRES_USER: "smp_user"
       POSTGRES_PASSWORD: "smp_password"

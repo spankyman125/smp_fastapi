@@ -1,4 +1,6 @@
 import os
+from typing import List
+from urllib import response
 from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import StreamingResponse
@@ -24,20 +26,35 @@ def get_db():
 async def root():
 	return {"test":"test"}
 
-@app.get("/songs/{id}", response_model= schemas.SongRead)
+# @app.get("/songs/{id}", response_model= schemas.SongRead)
+@app.get("/songs/{id}")
 def read_song(id: int, db: Session = Depends(get_db)):
-    user = crud.get_song(db, song_id=id)
-    if user is None:
+    song = crud.get_song(db, song_id=id)
+    if song is None:
         raise HTTPException(status_code=404, detail='Song not found')
-    return user
+    return song
 
-@app.get("/albums/{id}")
+# @app.get("/songs/", response_model= List[schemas.SongRead])
+@app.get("/songs/")
+def read_songs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    songs = crud.get_songs(db, skip=skip, limit=limit)
+    return songs
+
+# @app.get("/albums/{id}")
+@app.get("/albums/{id}", response_model=schemas.AlbumRead)
 def read_album(id: int, db: Session = Depends(get_db)):
     album = crud.get_album(db, album_id=id)
     if album is None:
         raise HTTPException(status_code=404, detail='Album not found')
     return album
 
+# @app.get("/albums/", response_model= List[schemas.SongRead])
+@app.get("/albums/")
+def read_songs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    songs = crud.get_songs(db, skip=skip, limit=limit)
+    return songs
+
+# @app.get("/artists/{id}",response_model=schemas.)
 @app.get("/artists/{id}")
 def read_artist(id: int, db: Session = Depends(get_db)):
     artist = crud.get_artist(db, artist_id=id)
@@ -45,6 +62,10 @@ def read_artist(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail='Artist not found')
     return artist
 
+@app.get("/test/")
+def fill_test_data(db: Session = Depends(get_db)):
+    crud.fill_testdata(db)
+    return True
 
 CONTENT_CHUNK_SIZE=100*1024
 
