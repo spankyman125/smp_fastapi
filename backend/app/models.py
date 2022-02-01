@@ -1,4 +1,3 @@
-from tkinter.tix import INTEGER
 import sqlalchemy
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time, Table
 from sqlalchemy.orm import relationship

@@ -1,2 +1,6 @@
-/backend/postgres/**
-/backend/app/static/songs/**
+/backend/postgres/
+/backend/app/static/songs/*
+/backend/app/static/images/album_covers/*
+/backend/app/static/images/artist_covers/*
+/backend/app/static/images/song_covers/*
+**/__pycache__/
