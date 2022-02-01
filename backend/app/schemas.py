@@ -1,47 +1,47 @@
 import datetime
 from typing import List, Optional
-from pydantic import BaseModel, FilePath
+from pydantic import BaseModel
 
 class SongBase(BaseModel):
     id: int
     title: str
     duration: datetime.time
-    file_url: FilePath
-    cover_url: FilePath
+    file_url: str
+    cover_url: str
+    
+    class Config:
+        orm_mode = True
 
 
 class AlbumBase(BaseModel):
     id: int
     title: str
-    release_date: datetime.time
-    cover_url: FilePath
+    release_date: datetime.date
+    cover_url: str
+
+    class Config:
+        orm_mode = True
 
 
 class ArtistBase(BaseModel):
     id: int
     name: str
-    cover_url: FilePath
-
-
-class SongRead(SongBase):
-    album: int
-    artists: List[ArtistBase]
+    cover_url: str
 
     class Config:
         orm_mode = True
+
+
+class SongRead(SongBase):
+    album: AlbumBase
+    artists: List[ArtistBase]
 
 
 class AlbumRead(AlbumBase):
     songs: List[SongBase]
     artists: List[ArtistBase]
 
-    class Config:
-        orm_mode = True
 
-        
 class ArtistRead(ArtistBase):
-    title: str
-    duration: datetime.time
-
     albums: List[AlbumBase]
     songs: List[SongBase]
