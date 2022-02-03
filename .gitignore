@@ -4,4 +4,5 @@
 /backend/app/static/images/artist_covers/*
 /backend/app/static/images/song_covers/*
 /backend/migrations/versions/*
+!/backend/migrations/versions/.gitkeep
 **/__pycache__/
