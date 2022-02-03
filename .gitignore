@@ -3,4 +3,5 @@
 /backend/app/static/images/album_covers/*
 /backend/app/static/images/artist_covers/*
 /backend/app/static/images/song_covers/*
+/backend/migrations/versions/*
 **/__pycache__/

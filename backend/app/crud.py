@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
 from . import models, schemas
-from passlib.context import CryptContext
-# from .main import pwd_context
+from app.security import get_password_hash, verify_password
 
 #Song
 def get_song(db: Session, song_id: int):
@@ -55,10 +54,18 @@ def get_artists(db: Session, skip: int = 0, limit: int = 100):
 def get_user(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
 
-def create_user(db: Session, user: schemas.UserCreate, pwd_context: CryptContext ):
-    password_hash = pwd_context.hash(user.password)
+def create_user(db: Session, user: schemas.UserCreate):
+    password_hash = get_password_hash(user.password)
     db_user = models.User(password_hash=password_hash, username=user.username)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
+
+def authenticate_user(username: str, password: str, db: Session):
+    user = get_user(db, username) 
+    if not user:
+        return False
+    if not verify_password(password, user.password_hash):
+        return False
+    return user
