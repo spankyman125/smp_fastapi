@@ -1,4 +1,5 @@
 /backend/postgres/
+<<<<<<< HEAD
 
 /backend/migrations/versions/*
 !/backend/migrations/versions/.gitkeep
@@ -15,6 +16,18 @@
 /backend/app/static/images/song_covers/*
 !/backend/app/static/images/song_covers/.gitkeep
 
+=======
+/backend/migrations/versions/*
+# !/backend/app/static/songs/*
+# !/backend/app/static/songs/.gitkeep
+# !/backend/app/static/images/album_covers/*
+# !/backend/app/static/images/album_covers/.gitkeep
+# !/backend/app/static/images/artist_covers/*
+# !/backend/app/static/images/artist_covers/.gitkeep
+# !/backend/app/static/images/song_covers/*
+# !/backend/app/static/images/song_covers/.gitkeep
+# !/backend/migrations/versions/.gitkeep
+>>>>>>> ec2b9847da197c0ff07c21abb551b8ad964369b5
 **/__pycache__/
 
 *.mp3
