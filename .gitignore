@@ -1,10 +1,20 @@
 /backend/postgres/
-# /backend/app/static/songs/*
-# /backend/app/static/images/album_covers/*
-# /backend/app/static/images/artist_covers/*
-# /backend/app/static/images/song_covers/*
+
 /backend/migrations/versions/*
 !/backend/migrations/versions/.gitkeep
+
+/backend/app/static/songs/*
+!/backend/app/static/songs/.gitkeep
+
+/backend/app/static/images/album_covers/*
+!/backend/app/static/images/album_covers/.gitkeep
+
+/backend/app/static/images/artist_covers/*
+!/backend/app/static/images/artist_covers/.gitkeep
+
+/backend/app/static/images/song_covers/*
+!/backend/app/static/images/song_covers/.gitkeep
+
 **/__pycache__/
 
 *.mp3
