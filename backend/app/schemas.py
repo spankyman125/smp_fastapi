@@ -1,4 +1,5 @@
 import datetime
+from faulthandler import disable
 from typing import List, Optional
 from pydantic import BaseModel
 
@@ -45,3 +46,26 @@ class AlbumRead(AlbumBase):
 class ArtistRead(ArtistBase):
     albums: List[AlbumBase]
     songs: List[SongBase]
+
+class User(BaseModel):
+    username: str
+    
+class UserAll(BaseModel):
+    username: str
+    password_hash: str
+    disabled: bool
+    class Config:
+        orm_mode = True
+
+class UserInDB(User):
+    password_hash: str
+
+class UserCreate(User):
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None

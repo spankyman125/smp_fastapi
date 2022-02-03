@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 0f7b17b5c5a8
+Revision ID: 32865b2153c0
 Revises: 
-Create Date: 2022-02-01 11:33:58.573679
+Create Date: 2022-02-02 11:54:13.891772
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '0f7b17b5c5a8'
+revision = '32865b2153c0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -34,6 +34,13 @@ def upgrade():
     )
     op.create_index(op.f('ix_artists_id'), 'artists', ['id'], unique=False)
     op.create_index(op.f('ix_artists_name'), 'artists', ['name'], unique=False)
+    op.create_table('users',
+    sa.Column('username', sa.String(), nullable=False),
+    sa.Column('password_hash', sa.String(), nullable=True),
+    sa.Column('disabled', sa.Boolean(), nullable=True),
+    sa.PrimaryKeyConstraint('username')
+    )
+    op.create_index(op.f('ix_users_username'), 'users', ['username'], unique=False)
     op.create_table('album_artist',
     sa.Column('album_id', sa.Integer(), nullable=False),
     sa.Column('artist_id', sa.Integer(), nullable=False),
@@ -68,6 +75,8 @@ def downgrade():
     op.drop_index(op.f('ix_songs_id'), table_name='songs')
     op.drop_table('songs')
     op.drop_table('album_artist')
+    op.drop_index(op.f('ix_users_username'), table_name='users')
+    op.drop_table('users')
     op.drop_index(op.f('ix_artists_name'), table_name='artists')
     op.drop_index(op.f('ix_artists_id'), table_name='artists')
     op.drop_table('artists')

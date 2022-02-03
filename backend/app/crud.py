@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session, joinedload
-from . import models
+from . import models, schemas
+from passlib.context import CryptContext
+# from .main import pwd_context
 
 #Song
 def get_song(db: Session, song_id: int):
@@ -10,7 +12,7 @@ def get_song(db: Session, song_id: int):
         first()
 
 def get_songs(db: Session, skip: int = 0, limit: int = 100):
-        return db.query(models.Song).\
+    return db.query(models.Song).\
         options(joinedload(models.Song.album)).\
         options(joinedload(models.Song.artists)).\
         offset(skip).\
@@ -41,7 +43,6 @@ def get_artist(db: Session, artist_id: int):
         filter(models.Artist.id == artist_id).\
         first()
 
-
 def get_artists(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Artist).\
         options(joinedload(models.Artist.songs)).\
@@ -49,3 +50,15 @@ def get_artists(db: Session, skip: int = 0, limit: int = 100):
         offset(skip).\
         limit(limit).\
         all()
+
+#Auth
+def get_user(db: Session, username: str):
+    return db.query(models.User).filter(models.User.username == username).first()
+
+def create_user(db: Session, user: schemas.UserCreate, pwd_context: CryptContext ):
+    password_hash = pwd_context.hash(user.password)
+    db_user = models.User(password_hash=password_hash, username=user.username)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user

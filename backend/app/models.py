@@ -1,21 +1,16 @@
-import sqlalchemy
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time, Table
+# import sqlalchemy
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time
 from sqlalchemy.orm import relationship
 
 from .database import Base
 
-# metadata = sqlalchemy.MetaData()
-
-# SongArtistRelation = Table("SongArtistRelation", Base.metadata,
-#     Column("song_id", ForeignKey("songs.id")), # index?
-#     Column("artist_id", ForeignKey("artists.id"))
-# )
-
-# AlbumArtistRelation = Table("AlbumArtistRelation", Base.metadata,
-#     Column("album_id", ForeignKey("albums.id")),
-#     Column("artist_id", ForeignKey("artists.id"))
-# )
-
+class User(Base):
+    __tablename__ = "users"
+    
+    # id = Column(Integer, unique=True, index=True)
+    username = Column(String, primary_key=True, index=True)
+    password_hash = Column(String)
+    disabled = Column(Boolean, default=False)
 
 class Song(Base):
     __tablename__ = "songs"
