@@ -5,23 +5,27 @@ services:
   uvicorn:
     build:
       context: .
-      dockerfile: Dockerfile-uvicorn-dev
+      dockerfile: Dockerfile-uvicorn-prod
     restart: always
     ports:
-      - "80:80"
+      - "33333:33333"
+      - "44444:44444"
     volumes:
-      - ./app:/container/app
-    # links:
-      # postgres
-  # postgres: 
-  #   image: postgres:14.0-alpine
-  #   restart: always
-  #   volumes: 
-  #     - ./postgres:/var/lib/postgresql/data:rw
-  #   environment:
-  #     POSTGRES_USER: TODO
-  #     POSTGRES_PASSWORD: TODO
-  #     POSTGRES_DB: TODO
-  #     PGDATA: TODO
-  #   ports:
-  #       - "5432:5432"
+      - ./backend/app:/container/app
+      - ./backend/migrations:/container/migrations
+      - ./backend/alembic.ini:/container/alembic.ini
+      - /etc/letsencrypt/live/septerra.duckdns.org/fullchain.pem:/container/fullchain.pem
+      - /etc/letsencrypt/live/septerra.duckdns.org/privkey.pem:/container/privkey.pem
+
+  postgres: 
+    image: postgres:14.0-alpine
+    restart: always
+    volumes: 
+      - ./backend/postgres:/var/lib/postgresql/data:rw
+    environment:
+      POSTGRES_USER: "smp_user"
+      POSTGRES_PASSWORD: "smp_password"
+      POSTGRES_DB: "smp_db"
+      PGDATA: "/var/lib/postgresql/data"
+    ports:
+        - "5432:5432"
