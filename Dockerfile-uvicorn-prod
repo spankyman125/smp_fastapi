@@ -1,5 +1,8 @@
 FROM python:3.9
 WORKDIR /container
 COPY ./requirements-prod.txt /container/requirements-prod.txt
+COPY ./start.sh /container/start.sh
 RUN pip install --no-cache-dir --upgrade -r /container/requirements-prod.txt
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["bash", "./start.sh"]
+
+# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
