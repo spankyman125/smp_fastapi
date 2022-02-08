@@ -9,7 +9,7 @@ from app import security
 
 from app.database import engine
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
 def get_db():
