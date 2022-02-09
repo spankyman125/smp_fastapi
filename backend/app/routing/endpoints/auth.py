@@ -10,14 +10,15 @@ from typing import List
 
 
 from app import dependencies
-from app import crud, models, schemas
+from app import models, schemas
+from app.crud import user as crud_user
 from app import security
 
 router = APIRouter()
 
 @router.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(dependencies.get_db)):
-    user = crud.authenticate_user(form_data.username, form_data.password, db)
+    user = crud_user.authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
