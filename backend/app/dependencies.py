@@ -4,7 +4,8 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 
-from app import crud, models, schemas
+from app.crud import user as crud_user
+from app import schemas
 from app import security
 
 from app.database import engine
@@ -33,7 +34,7 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
         token_data = schemas.TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = crud.get_user(db, username=token_data.username)
+    user = crud_user.get_user(db, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user

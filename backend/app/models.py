@@ -1,6 +1,3 @@
-# import sqlalchemy
-from ntpath import realpath
-from turtle import back
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time
 from sqlalchemy.orm import relationship
 
