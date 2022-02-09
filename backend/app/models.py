@@ -1,4 +1,6 @@
 # import sqlalchemy
+from ntpath import realpath
+from turtle import back
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time
 from sqlalchemy.orm import relationship
 
@@ -7,10 +9,14 @@ from .database import Base
 class User(Base):
     __tablename__ = "users"
     
-    # id = Column(Integer, unique=True, index=True)
-    username = Column(String, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
     password_hash = Column(String)
     disabled = Column(Boolean, default=False)
+
+    artists = relationship("Artist", secondary="user_artist", back_populates="users")
+    songs = relationship("Song", secondary="user_song", back_populates="users")
+    albums = relationship("Album", secondary="user_album", back_populates="users")
 
 class Song(Base):
     __tablename__ = "songs"
@@ -25,7 +31,7 @@ class Song(Base):
 
     album = relationship("Album", back_populates="songs")
     artists = relationship("Artist", secondary="song_artist", back_populates="songs")
-
+    users = relationship("User", secondary="user_song", back_populates="songs")
 
 class Album(Base):
     __tablename__ = "albums"
@@ -39,6 +45,7 @@ class Album(Base):
     #jenre relationship fk
     songs = relationship("Song", back_populates="album")
     artists = relationship("Artist", secondary="album_artist", back_populates="albums")
+    users = relationship("User", secondary="user_album", back_populates="albums")
 
 
 class Artist(Base):
@@ -50,6 +57,7 @@ class Artist(Base):
 
     songs = relationship("Song", secondary="song_artist", back_populates="artists")
     albums = relationship("Album", secondary="album_artist", back_populates="artists")
+    users = relationship("User", secondary="user_artist", back_populates="artists")
 
 
 class SongArtistRelation(Base):
@@ -64,3 +72,27 @@ class AlbumArtistRelation(Base):
 
     album_id = Column(Integer, ForeignKey("albums.id"), primary_key=True)
     artist_id = Column(Integer, ForeignKey("artists.id"), primary_key=True)
+
+
+class UserSongLike(Base):
+    __tablename__ = "user_song"
+
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    song_id = Column(Integer, ForeignKey("songs.id"), primary_key=True)
+
+
+class UserAlbumLike(Base):
+    __tablename__ = "user_album"
+
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    album_id = Column(Integer, ForeignKey("albums.id"), primary_key=True)
+
+
+class UserArtistLike(Base):
+    __tablename__ = "user_artist"
+
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    artist_id = Column(Integer, ForeignKey("artists.id"), primary_key=True)
+
+# playlist
+# playlist_user
