@@ -1,6 +1,7 @@
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, contains_eager
 from . import models, schemas
 from app.security import get_password_hash, verify_password
+from sqlalchemy.exc import IntegrityError
 
 #Song
 def get_song(db: Session, song_id: int):
@@ -49,6 +50,22 @@ def get_artists(db: Session, skip: int = 0, limit: int = 100):
         offset(skip).\
         limit(limit).\
         all()
+
+def get_artists_liked(db: Session, user: models.User , skip: int = 0, limit: int = 100) :
+    return user.artists
+
+def like_artist(db: Session, artist_id: int, user: models.User):
+    like = db.query(models.UserArtistLike).get((user.id, artist_id))
+    if like:
+        db.delete(like)
+        db.commit()
+        return False 
+    else:
+        like = models.UserArtistLike(user_id=user.id, artist_id=artist_id)
+        db.add(like)
+        db.commit()
+        db.refresh(like)
+        return True
 
 #Auth
 def get_user(db: Session, username: str):
