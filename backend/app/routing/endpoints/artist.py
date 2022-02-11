@@ -10,11 +10,6 @@ from app import dependencies
 
 router = APIRouter()
 
-@router.get("/likes", response_model=List[schemas.ArtistBase])
-def read_artists_liked(skip: int = 0, limit: int = 100, db: Session = Depends(dependencies.get_db), current_user: models.User = Depends(dependencies.get_current_user)):
-    artists = crud_artist.get_artists_liked(db, skip=skip, limit=limit, user=current_user)
-    return artists
-
 @router.get("/{id}", response_model=schemas.ArtistRead)
 def read_artist(id: int, db: Session = Depends(dependencies.get_db)):
     artist = crud_artist.get_artist(db, artist_id=id)

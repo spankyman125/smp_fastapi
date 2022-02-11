@@ -31,7 +31,3 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 @router.get("/token-return/")
 def return_token(token: str = Depends(dependencies.oauth2_scheme)):
     return {"token":token}
-
-# @router.get("/current-user/", response_model=schemas.UserAll)
-# def return_current_user(current_user: models.User = Depends(dependencies.get_current_user)):
-#     return current_user
