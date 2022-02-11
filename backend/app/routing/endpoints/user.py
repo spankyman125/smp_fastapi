@@ -6,8 +6,13 @@ from sqlalchemy.orm import Session
 from app.crud import user as crud_user 
 from app import schemas
 from app import dependencies
+from app import models
 
 router = APIRouter()
+
+@router.get("/me", response_model=schemas.UserAll)
+def return_current_user(current_user: models.User = Depends(dependencies.get_current_user)):
+    return current_user
 
 @router.get("/{username}", response_model=schemas.UserAll)
 def read_user(username: str, db: Session = Depends(dependencies.get_db)):
