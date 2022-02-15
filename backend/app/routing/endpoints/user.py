@@ -3,20 +3,16 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app import schemas, dependencies, models
 from app.crud import user as crud_user
 from app.crud.artist import crud_artist
 from app.crud.song import crud_song
 from app.crud.album import crud_album 
 # from app.crud.playlist import crud_playlist
 
-from app import schemas
-from app import dependencies
-from app import models
-
 router = APIRouter()
 router_me = APIRouter()
 router_others = APIRouter()
-
 
 @router_me.get("/me", response_model=schemas.UserAll)
 def read_user_self(current_user: models.User = Depends(dependencies.get_current_user)):

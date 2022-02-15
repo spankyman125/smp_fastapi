@@ -1,15 +1,11 @@
 from datetime import timedelta
 from typing import Any
-
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from fastapi import status
 
-from app import dependencies
-from app import schemas
+from app import dependencies, schemas, security
 from app.crud import user as crud_user
-from app import security
 
 router = APIRouter()
 

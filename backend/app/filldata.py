@@ -1,9 +1,8 @@
 import datetime
-from pyexpat import model
 import random
 import time
-
 from sqlalchemy.orm import Session
+
 from . import models
 
 def random_date(seed):

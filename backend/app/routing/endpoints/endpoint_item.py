@@ -1,6 +1,4 @@
 from fastapi import HTTPException
-from sqlalchemy.orm import Session
-from app import models
 from app.crud.song import crud_song
 from app.crud.artist import crud_artist
 from app.crud.album import crud_album

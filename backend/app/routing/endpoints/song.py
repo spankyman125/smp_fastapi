@@ -1,10 +1,8 @@
 from typing import List
-
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app import schemas, models
-from app import dependencies
+from app import schemas, models, dependencies
 from .endpoint_item import song_endpoint
 
 router = APIRouter()

@@ -1,10 +1,8 @@
 from typing import List
-
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app import dependencies
-from app import filldata
+from app import dependencies, filldata
 
 router = APIRouter()
 

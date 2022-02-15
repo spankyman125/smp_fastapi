@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session, joinedload
+
 from app import models, schemas
 from app.security import get_password_hash, verify_password
-
 
 def get_user(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).first()
