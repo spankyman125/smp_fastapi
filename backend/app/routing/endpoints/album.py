@@ -16,7 +16,7 @@ def read_album(
     ):
     return album_endpoint.read(db, id)
 
-@router.post("/{id}/like")
+@router.put("/{id}/like")
 def like_artist(
         id: int, 
         db: Session = Depends(dependencies.get_db), 

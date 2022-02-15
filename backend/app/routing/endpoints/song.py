@@ -16,7 +16,7 @@ def read_song(
     ):
     return song_endpoint.read(db, id)
 
-@router.get("/{id}/like")
+@router.put("/{id}/like")
 def like_song(
         id: int, 
         db: Session = Depends(dependencies.get_db), 
