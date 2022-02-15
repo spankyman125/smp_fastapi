@@ -15,6 +15,7 @@ class User(Base):
     songs = relationship("Song", secondary="user_song", back_populates="users")
     albums = relationship("Album", secondary="user_album", back_populates="users")
 
+
 class Song(Base):
     __tablename__ = "songs"
 
@@ -29,6 +30,7 @@ class Song(Base):
     album = relationship("Album", back_populates="songs")
     artists = relationship("Artist", secondary="song_artist", back_populates="songs")
     users = relationship("User", secondary="user_song", back_populates="songs")
+
 
 class Album(Base):
     __tablename__ = "albums"
