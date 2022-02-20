@@ -10,8 +10,11 @@ def create_user(db: Session, user: schemas.UserCreate):
     password_hash = get_password_hash(user.password)
     db_user = models.User(password_hash=password_hash, username=user.username)
     db.add(db_user)
-    db.commit()
+    db.flush()
     db.refresh(db_user)
+    db_queue = models.Queue(user_id=db_user.id, songs=[], current_position=-1)
+    db.add(db_queue)
+    db.commit()
     return db_user
 
 def authenticate_user(username: str, password: str, db: Session):
