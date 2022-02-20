@@ -32,11 +32,13 @@ class QueueCRUD():
             raise HTTPException(status_code=400, detail='Wrong song id')
 
     def delete(self, db, user: models.User, position: int):
+        if user.queue.current_position == -1:
+            raise HTTPException(status_code=400, detail='Queue is empty')
         queue = user.queue.songs.copy()
         if len(queue) > position:
             if (position == user.queue.current_position):
                     user.queue.current_position -= 1
-            if (position == 0 and len(queue)>1):
+            if (position == 0 and len(queue) > 1):
                     user.queue.current_position = 0
             queue.pop(position)
             user.queue.songs = queue
@@ -45,7 +47,64 @@ class QueueCRUD():
         else:
             raise HTTPException(status_code=400, detail='Wrong position')
 
-    def replace(self, user: models.User, song_list):
+    def clear(self, db, user: models.User):
+        user.queue.songs = []
+        user.queue.current_position = -1
+        db.commit()
         return user.queue # возвращать только подтверждение?
+
+    def current(self, db, user: models.User):
+        if user.queue.current_position != -1:
+            current_song = db.query(models.Song).\
+                filter_by(id=user.queue.songs[user.queue.current_position]).\
+                options(joinedload(models.Song.album)).\
+                options(joinedload(models.Song.artists)).\
+                first()
+            return current_song # возвращать только подтверждение?
+        else:
+            raise HTTPException(status_code=400, detail='Queue is empty')
+
+    def next(self, db, user: models.User):
+        if user.queue.current_position == -1:
+            raise HTTPException(status_code=400, detail='Queue is empty')
+        if user.queue.current_position < len(user.queue.songs) - 1:
+            user.queue.current_position += 1
+            db.commit()
+            current_song = db.query(models.Song).\
+                filter_by(id=user.queue.songs[user.queue.current_position]).\
+                options(joinedload(models.Song.album)).\
+                options(joinedload(models.Song.artists)).\
+                first()
+            return current_song # возвращать только подтверждение?
+        else:
+            raise HTTPException(status_code=400, detail='No next track')
+
+    def prev(self, db, user: models.User):
+        if user.queue.current_position == -1:
+            raise HTTPException(status_code=400, detail='Queue is empty')
+        if user.queue.current_position > 0:
+            user.queue.current_position -= 1
+            db.commit()
+            current_song = db.query(models.Song).\
+                filter_by(id=user.queue.songs[user.queue.current_position]).\
+                options(joinedload(models.Song.album)).\
+                options(joinedload(models.Song.artists)).\
+                first()
+            return current_song # возвращать только подтверждение?
+        else:
+            raise HTTPException(status_code=400, detail='No previous track')
+
+    def replace(self, db, user: models.User, song_list):
+        check = db.query(models.Song).\
+            filter(models.Song.id.in_(song_list))
+        id_map = {t.id: t for t in check}
+        try:
+            list = [id_map[n] for n in song_list]
+            user.queue.songs = song_list
+            user.queue.current_position = 0
+            db.commit()
+            return user.queue
+        except:
+            raise HTTPException(status_code=400, detail='Wrong id provided')
 
 crud_queue = QueueCRUD()
