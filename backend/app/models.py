@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -10,10 +11,12 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     password_hash = Column(String)
     disabled = Column(Boolean, default=False)
+    #avatar 
 
     artists = relationship("Artist", secondary="user_artist", back_populates="users")
     songs = relationship("Song", secondary="user_song", back_populates="users")
     albums = relationship("Album", secondary="user_album", back_populates="users")
+    queue = relationship("Queue", uselist=False, back_populates="user")
 
 
 class Song(Base):
@@ -57,6 +60,15 @@ class Artist(Base):
     songs = relationship("Song", secondary="song_artist", back_populates="artists")
     albums = relationship("Album", secondary="album_artist", back_populates="artists")
     users = relationship("User", secondary="user_artist", back_populates="artists")
+
+class Queue(Base):
+    __tablename__ = "queues"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    songs = Column(postgresql.ARRAY(Integer))
+    current_position = Column(Integer)
+    user = relationship("User", back_populates="queue")
 
 
 class SongArtistRelation(Base):

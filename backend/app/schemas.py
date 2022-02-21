@@ -2,6 +2,11 @@ import datetime
 from typing import List, Optional
 from pydantic import BaseModel
 
+class SongList(BaseModel):
+    songs: List[int]
+    class Config:
+        orm_mode = True
+
 class SongBase(BaseModel):
     id: int
     title: str
