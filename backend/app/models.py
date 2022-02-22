@@ -16,6 +16,7 @@ class User(Base):
     artists = relationship("Artist", secondary="user_artist", back_populates="users")
     songs = relationship("Song", secondary="user_song", back_populates="users")
     albums = relationship("Album", secondary="user_album", back_populates="users")
+    playlists = relationship("Playlist", back_populates="user")
     queue = relationship("Queue", uselist=False, back_populates="user")
 
 
@@ -65,11 +66,22 @@ class Queue(Base):
     __tablename__ = "queues"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
     songs = Column(postgresql.ARRAY(Integer))
     current_position = Column(Integer)
+    user_id = Column(Integer, ForeignKey("users.id"))
+
     user = relationship("User", back_populates="queue")
 
+class Playlist(Base):
+    __tablename__ = "playlists"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    songs = Column(postgresql.ARRAY(Integer))
+    # cover_url = Column(String) # /static/images/playlist_covers/
+    user_id = Column(Integer, ForeignKey("users.id"))
+
+    user = relationship("User", back_populates="playlists")
 
 class SongArtistRelation(Base):
     __tablename__ = "song_artist"
@@ -104,6 +116,3 @@ class UserArtistLike(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
     artist_id = Column(Integer, ForeignKey("artists.id"), primary_key=True)
-
-# playlist
-# playlist_user
