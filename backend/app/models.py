@@ -11,7 +11,7 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     password_hash = Column(String)
     disabled = Column(Boolean, default=False)
-    #avatar 
+    image_url = Column(String, default="/static/images/user_avatars/default.png")
 
     artists = relationship("Artist", secondary="user_artist", back_populates="users")
     songs = relationship("Song", secondary="user_song", back_populates="users")
@@ -27,7 +27,7 @@ class Song(Base):
     title = Column(String)
     duration = Column(Time(timezone=False)) # 2:18
     file_url = Column(String)  # /static/songs/{id}
-    cover_url = Column(String) # /static/images/song_covers/ (ссылаться на альбом если нету?, или сингл=альбом)
+    cover_url = Column(String, default="/static/images/song_covers/default.png") # /static/images/song_covers/ (ссылаться на альбом если нету?, или сингл=альбом)
     
     album_id = Column(Integer, ForeignKey("albums.id"))
 
@@ -42,7 +42,7 @@ class Album(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
     release_date = Column(Date)
-    cover_url = Column(String) # /static/images/album_covers/
+    cover_url = Column(String, default="/static/images/album_covers/default.png") # /static/images/album_covers/
     # is_single = Column(Boolean) 
 
     #jenre relationship fk
@@ -56,7 +56,7 @@ class Artist(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    cover_url = Column(String) #/static/images/artist_covers/
+    cover_url = Column(String, default="/static/images/artist_covers/default.png") #/static/images/artist_covers/
 
     songs = relationship("Song", secondary="song_artist", back_populates="artists")
     albums = relationship("Album", secondary="album_artist", back_populates="artists")
@@ -78,7 +78,7 @@ class Playlist(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     songs = Column(postgresql.ARRAY(Integer))
-    # cover_url = Column(String) # /static/images/playlist_covers/
+    cover_url = Column(String, default="/static/images/playlist_covers/default.png") # /static/images/playlist_covers/
     user_id = Column(Integer, ForeignKey("users.id"))
 
     user = relationship("User", back_populates="playlists")
