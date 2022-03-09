@@ -12,6 +12,7 @@ class User(Base):
     password_hash = Column(String)
     disabled = Column(Boolean, default=False)
     image_url = Column(String, default="/static/images/user_avatars/default.png")
+    refresh_token = Column(String)  
 
     artists = relationship("Artist", secondary="user_artist", back_populates="users")
     songs = relationship("Song", secondary="user_song", back_populates="users")
