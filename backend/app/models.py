@@ -1,3 +1,4 @@
+from unicodedata import name
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
@@ -9,6 +10,10 @@ class User(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
+    name = Column(String)
+    surname = Column(String)
+    about = Column(String)
+    email = Column(String)
     password_hash = Column(String)
     disabled = Column(Boolean, default=False)
     image_url = Column(String, default="/static/images/user_avatars/default.png")

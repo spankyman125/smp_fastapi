@@ -10,7 +10,7 @@ router = APIRouter()
 @router.get("/", response_model=List[schemas.PlaylistAll])
 def read_playlists(
         db: Session = Depends(dependencies.get_db),
-        current_user: models.User = Depends(dependencies.get_current_user)
+        current_user: models.User = Depends(dependencies.get_current_user),
     ):
     return crud_playlist.get_all(current_user)
 

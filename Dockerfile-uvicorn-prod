@@ -4,5 +4,3 @@ COPY ./requirements-prod.txt /container/requirements-prod.txt
 COPY ./start.sh /container/start.sh
 RUN pip install --no-cache-dir --upgrade -r /container/requirements-prod.txt
 CMD ["bash", "./start.sh"]
-
-# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
