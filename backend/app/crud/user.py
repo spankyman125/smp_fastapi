@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
-
+import os
+from app import main
 from app import models, schemas
 from app.security import get_password_hash, verify_password
 
@@ -15,6 +16,27 @@ def create_user(db: Session, user: schemas.UserCreate):
     db_queue = models.Queue(user_id=db_user.id, songs=[], current_position=-1)
     db.add(db_queue)
     db.commit()
+    return db_user
+
+def update_user(db: Session, user:models.User, user_about: schemas.UserAbout):
+    db_user = db.query(models.User).filter_by(id=user.id).first()
+    db_user.name=user_about.name
+    db_user.surname=user_about.surname
+    db_user.about=user_about.about
+    db_user.email=user_about.email
+    db.commit()
+    db.flush()
+    db.refresh(db_user)
+    return db_user
+
+def update_user_avatar(db: Session, user:models.User, image_path: str):
+    db_user = db.query(models.User).filter_by(id=user.id).first()
+    if os.path.isfile(f"{main.APP_PATH}{db_user.image_url}"):
+        os.remove(f"{main.APP_PATH}{db_user.image_url}")
+    db_user.image_url=image_path
+    db.commit()
+    db.flush()
+    db.refresh(db_user)
     return db_user
 
 def authenticate_user(username: str, password: str, db: Session):

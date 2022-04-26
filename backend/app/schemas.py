@@ -1,6 +1,6 @@
 import datetime
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 class SongList(BaseModel):
     songs: List[int]
@@ -56,8 +56,19 @@ class User(BaseModel):
     
 class UserAll(BaseModel):
     username: str
-    password_hash: str
+    image_url: str
     disabled: bool
+    name: Optional[str] 
+    surname: Optional[str] 
+    about: Optional[str] 
+    email: Optional[str] 
+
+    class Config:
+        orm_mode = True
+        
+class PlaylistAll(BaseModel):
+    name: str
+    cover_url: str
     class Config:
         orm_mode = True
 
@@ -66,6 +77,15 @@ class UserInDB(User):
 
 class UserCreate(User):
     password: str
+
+class UserAbout(BaseModel):
+    name: Optional[str]
+    surname: Optional[str] 
+    about: Optional[str] 
+    email: Optional[str] 
+    
+    class Config:
+        orm_mode = True
 
 class Token(BaseModel):
     access_token: str

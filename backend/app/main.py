@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-
 from app.routing.router import api_router
+import pathlib
+APP_PATH=pathlib.Path(__file__).parent.resolve()
 
 app = FastAPI()
 app.mount("/static/images", StaticFiles(directory="app/static/images"), name="static_images")
