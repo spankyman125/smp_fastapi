@@ -53,11 +53,19 @@ class ArtistRead(ArtistBase):
 
 class User(BaseModel):
     username: str
-    
+
+
 class UserAll(BaseModel):
     username: str
     password_hash: str
     disabled: bool
+    class Config:
+        orm_mode = True
+
+class PlaylistAll(BaseModel):
+    id: int
+    name: str
+    cover_url: str
     class Config:
         orm_mode = True
 
