@@ -31,6 +31,15 @@ def add_song(
     ):
     return crud_playlist.add(db, current_user, song_id, id)
 
+@router.post("/{id}/add-list")
+def add_songs(
+        id: int,
+        song_list: List[int],
+        db: Session = Depends(dependencies.get_db),
+        current_user: models.User = Depends(dependencies.get_current_user),
+    ):
+    return crud_playlist.add_list(db=db, user=current_user, song_list=song_list, playlist_id=id)
+
 @router.post("/")
 def create_playlist(
         name: str,
