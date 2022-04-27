@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
-import os
+import os, uuid
+from fastapi import UploadFile, File
 from app import main
 from app import models, schemas
 from app.security import get_password_hash, verify_password
@@ -29,11 +30,17 @@ def update_user(db: Session, user:models.User, user_about: schemas.UserAbout):
     db.refresh(db_user)
     return db_user
 
-def update_user_avatar(db: Session, user:models.User, image_path: str):
+async def update_user_avatar(db: Session, user:models.User, file: UploadFile=File(...)):
+    file.filename = f"{uuid.uuid4()}.png"
+    path = f"/static/images/user_avatars/{file.filename}"
+    contents = await file.read()
+    with open(f"{main.APP_PATH}{path}", "wb") as f:
+        f.write(contents)
+    
     db_user = db.query(models.User).filter_by(id=user.id).first()
     if os.path.isfile(f"{main.APP_PATH}{db_user.image_url}"):
         os.remove(f"{main.APP_PATH}{db_user.image_url}")
-    db_user.image_url=image_path
+    db_user.image_url=path
     db.commit()
     db.flush()
     db.refresh(db_user)

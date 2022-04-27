@@ -1,4 +1,5 @@
 from typing import List
+from urllib import response
 
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
@@ -9,7 +10,6 @@ from app.crud.artist import crud_artist
 from app.crud.song import crud_song
 from app.crud.album import crud_album 
 import uuid
-# from app.crud.playlist import crud_playlist
 
 router = APIRouter()
 router_me = APIRouter()
@@ -27,20 +27,13 @@ def update_user_about(
 ):
     return crud_user.update_user(db, user=current_user, user_about=user_about)
 
-@router_me.post("/me/upload-avatar")
+@router_me.post("/me/upload-image", response_model=schemas.UserUpdateImage)
 async def upload_avatar(
     file: UploadFile=File(...),
     db: Session = Depends(dependencies.get_db),
     current_user: models.User = Depends(dependencies.get_current_user), 
 ):
-    file.filename = f"{uuid.uuid4()}.png"
-    path = f"/static/images/user_avatars/{file.filename}"
-    contents = await file.read()
-    #TODO: remove old avatars
-    with open(f"{main.APP_PATH}{path}", "wb") as f:
-        f.write(contents)
-
-    return crud_user.update_user_avatar(db, user=current_user, image_path=path)
+    return await crud_user.update_user_avatar(db, user=current_user, file=file)
 
 @router_me.get("/me/artists", response_model=List[schemas.ArtistBase])
 def read_artists_by_self(current_user: models.User = Depends(dependencies.get_current_user)): 
