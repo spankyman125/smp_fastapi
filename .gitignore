@@ -1,26 +1,15 @@
 /backend/postgres/
-
 /backend/migrations/versions/*
-# !/backend/migrations/versions/.gitkeep
-!/backend/migrations/versions/default.png
-
 /backend/app/static/songs/*
-# !/backend/app/static/songs/.gitkeep
-!/backend/app/static/songs/default.png
-
-/backend/app/static/images/album_covers/*
-# !/backend/app/static/images/album_covers/.gitkeep
-!/backend/app/static/images/album_covers/default.png
-
-/backend/app/static/images/artist_covers/*
-# !/backend/app/static/images/artist_covers/.gitkeep
-!/backend/app/static/images/artist_covers/default.png
-
-/backend/app/static/images/song_covers/*
-# !/backend/app/static/images/song_covers/.gitkeep
-!/backend/app/static/images/song_covers/default.png
 
 **/__pycache__/
 
 *.mp3
 *.png
+
+/backend/app/static/images/*/*
+!/backend/app/static/images/album_covers/default.png
+!/backend/app/static/images/artist_covers/default.png
+!/backend/app/static/images/song_covers/default.png
+!/backend/app/static/images/playlist_covers/default.png
+!/backend/app/static/images/user_avatars/default.png

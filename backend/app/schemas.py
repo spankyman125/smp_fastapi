@@ -67,6 +67,7 @@ class UserAll(BaseModel):
         orm_mode = True
         
 class PlaylistAll(BaseModel):
+    id: int
     name: str
     cover_url: str
     class Config:
