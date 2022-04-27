@@ -2,7 +2,7 @@ from calendar import c
 from app import models
 from sqlalchemy.orm import joinedload
 from fastapi import HTTPException
-
+from typing import List
 
 class PlaylistCRUD():
     def __init__(self):
@@ -50,6 +50,24 @@ class PlaylistCRUD():
                 return playlist
             else:
                 raise HTTPException(status_code=400, detail='Wrong song id')
+        else:
+            raise HTTPException(status_code=404, detail='Playlist not found')
+
+    def add_list(self, db, user: models.User, playlist_id: int, song_list: List[int]):    
+        playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
+        if playlist and playlist.user_id == user.id:   
+            check = db.query(models.Song).\
+                filter(models.Song.id.in_(song_list))
+            id_map = {t.id: t for t in check}
+            try:
+                list = [id_map[n] for n in song_list]
+                playlist.songs = playlist.songs + song_list
+                db.commit()
+                db.flush()
+                db.refresh(playlist)
+                return playlist
+            except:
+                raise HTTPException(status_code=400, detail='Wrong id provided')
         else:
             raise HTTPException(status_code=404, detail='Playlist not found')
 
