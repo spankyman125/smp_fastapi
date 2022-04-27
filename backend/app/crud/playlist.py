@@ -1,7 +1,8 @@
+import uuid, os
 from calendar import c
-from app import models
-from sqlalchemy.orm import joinedload
-from fastapi import HTTPException
+from app import models, main
+from sqlalchemy.orm import joinedload, Session
+from fastapi import HTTPException, UploadFile, File
 from typing import List
 
 class PlaylistCRUD():
@@ -38,6 +39,25 @@ class PlaylistCRUD():
 
     def get_all(self, user: models.User):
         return user.playlists
+
+    async def update_playlist_image(self, db: Session, user:models.User, playlist_id: int, file: UploadFile=File(...)):
+        playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
+        if playlist and playlist.user_id == user.id:
+            file.filename = f"{uuid.uuid4()}.png"
+            path = f"/static/images/playlist_covers/{file.filename}"
+            contents = await file.read()
+            with open(f"{main.APP_PATH}{path}", "wb") as f:
+                f.write(contents)
+            
+            if os.path.isfile(f"{main.APP_PATH}{playlist.cover_url}"):
+                os.remove(f"{main.APP_PATH}{playlist.cover_url}")
+            playlist.cover_url=path
+            db.commit()
+            db.flush()
+            db.refresh(playlist)
+            return playlist
+        else:
+            raise HTTPException(status_code=404, detail='Playlist not found')
 
     def add(self, db, user: models.User, song_id: int, playlist_id: int):
         playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
