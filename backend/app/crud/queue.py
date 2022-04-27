@@ -14,10 +14,10 @@ class QueueCRUD():
             options(joinedload(models.Song.artists))
         id_map = {t.id: t for t in queue}
         songs = [id_map[n] for n in user.queue.songs]
-        result = [{
+        result = {
             "current_position": user.queue.current_position,
             "songs": songs 
-        }]
+        }
         return result
 
     def add(self, db, user: models.User, id: int):
@@ -103,8 +103,7 @@ class QueueCRUD():
             user.queue.songs = song_list
             user.queue.current_position = 0
             db.commit()
-            return user.queue
         except:
             raise HTTPException(status_code=400, detail='Wrong id provided')
-
+        return self.get(db, user)
 crud_queue = QueueCRUD()

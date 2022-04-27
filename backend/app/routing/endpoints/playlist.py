@@ -15,7 +15,7 @@ def read_playlists(
     ):
     return crud_playlist.get_all(current_user)
 
-@router.get("/{id}")
+@router.get("/{id}",response_model=schemas.PlaylistAll)
 def read_playlist(
         id: int,
         db: Session = Depends(dependencies.get_db),

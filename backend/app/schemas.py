@@ -2,10 +2,6 @@ import datetime
 from typing import List, Optional
 from pydantic import BaseModel
 
-# class SongList(BaseModel):
-#     songs: List[int]
-#     class Config:
-#         orm_mode = True
 
 class SongBase(BaseModel):
     id: int
@@ -50,6 +46,7 @@ class User(BaseModel):
     username: str
     class Config:
         orm_mode = True
+
 class UserAll(BaseModel):
     username: str
     image_url: str
@@ -75,6 +72,11 @@ class UserAbout(BaseModel):
     class Config:
         orm_mode = True
 
+class Queue(BaseModel):
+    current_position: int
+    songs: List[SongBase]
+    class Config:
+        orm_mode = True
 class PlaylistAll(BaseModel):
     id: int
     name: str
