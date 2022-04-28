@@ -18,7 +18,7 @@ def read_song(
 def like_song(
         id: int, 
         db: Session = Depends(dependencies.get_db), 
-        current_user: models.User = Depends(dependencies.get_current_user)
+        current_user: schemas.UserReturn = Depends(dependencies.get_current_user)
     ):
     return song_endpoint.like(db, id, current_user)
 

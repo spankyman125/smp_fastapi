@@ -8,7 +8,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_KEY = "5186b05a370027141d3f1e9c19a83aa82b21176e3e1d70641200450fbb964821" #NOT SECRET ;)
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 240
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 def verify_password(plain_password, password_hash):
     return pwd_context.verify(plain_password, password_hash)
