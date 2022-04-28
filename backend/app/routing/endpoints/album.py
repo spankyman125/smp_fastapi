@@ -20,7 +20,7 @@ def read_album(
 def like_artist(
         id: int, 
         db: Session = Depends(dependencies.get_db), 
-        current_user: models.User = Depends(dependencies.get_current_user)
+        current_user: schemas.UserReturn = Depends(dependencies.get_current_user)
     ):
     return album_endpoint.like(db, id, current_user)
 

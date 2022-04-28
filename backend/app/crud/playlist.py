@@ -1,6 +1,6 @@
 import uuid, os
 from calendar import c
-from app import models, main
+from app import models, main, schemas
 from sqlalchemy.orm import joinedload, Session
 from fastapi import HTTPException, UploadFile, File
 from typing import List
@@ -9,14 +9,14 @@ class PlaylistCRUD():
     def __init__(self):
         pass
 
-    def create(self, db, user: models.User, name: str):
+    def create(self, db, user:schemas.UserReturn, name: str):
         playlist = models.Playlist(name=name, user_id=user.id, songs=[])
         db.add(playlist)
         db.commit()
         db.refresh(playlist)
         return playlist
 
-    def get(self, db, user: models.User, id:int):
+    def get(self, db, user:schemas.UserReturn, id:int):
         playlist = db.query(models.Playlist).filter_by(id=id).first()
         if playlist and playlist.user_id == user.id:
             if playlist.songs:
@@ -37,8 +37,9 @@ class PlaylistCRUD():
         else:
             raise HTTPException(status_code=404, detail='Playlist not found')
 
-    def get_all(self, user: models.User):
-        return user.playlists
+    def get_all(self, db: Session, user:schemas.UserReturn):
+        db_user = db.query(models.User).filter(models.User.username == user.username).first()
+        return db_user.playlists
 
     async def update_playlist_image(self, db: Session, user:models.User, playlist_id: int, file: UploadFile=File(...)):
         playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
@@ -49,7 +50,7 @@ class PlaylistCRUD():
             with open(f"{main.APP_PATH}{path}", "wb") as f:
                 f.write(contents)
             
-            if os.path.isfile(f"{main.APP_PATH}{playlist.cover_url}"):
+            if playlist.cover_url!="/static/images/playlist_covers/default.png" and os.path.isfile(f"{main.APP_PATH}{playlist.cover_url}"):
                 os.remove(f"{main.APP_PATH}{playlist.cover_url}")
             playlist.cover_url=path
             db.commit()
@@ -59,7 +60,7 @@ class PlaylistCRUD():
         else:
             raise HTTPException(status_code=404, detail='Playlist not found')
 
-    def add(self, db, user: models.User, song_id: int, playlist_id: int):
+    def add(self, db, user:schemas.UserReturn, song_id: int, playlist_id: int):
         playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
         if playlist and playlist.user_id == user.id:
             if bool(db.query(models.Song.id).filter_by(id=song_id).first()):            
@@ -73,7 +74,7 @@ class PlaylistCRUD():
         else:
             raise HTTPException(status_code=404, detail='Playlist not found')
 
-    def add_list(self, db, user: models.User, playlist_id: int, song_list: List[int]):    
+    def add_list(self, db, user:schemas.UserReturn, playlist_id: int, song_list: List[int]):    
         playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
         if playlist and playlist.user_id == user.id:   
             check = db.query(models.Song).\
@@ -91,7 +92,7 @@ class PlaylistCRUD():
         else:
             raise HTTPException(status_code=404, detail='Playlist not found')
 
-    def remove(self, db, user: models.User, position: int, playlist_id: int):
+    def remove(self, db, user:schemas.UserReturn, position: int, playlist_id: int):
         playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
         if playlist and playlist.user_id == user.id:
             if len(playlist.songs) > position:
@@ -107,7 +108,7 @@ class PlaylistCRUD():
         else:
             raise HTTPException(status_code=404, detail='Playlist not found')
 
-    def delete(self, db, user: models.User, playlist_id: int):
+    def delete(self, db, user:schemas.UserReturn, playlist_id: int):
         playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
         if playlist and playlist.user_id == user.id:
             db.delete(playlist)

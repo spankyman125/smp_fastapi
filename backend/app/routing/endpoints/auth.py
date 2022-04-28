@@ -22,7 +22,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     db.commit()
     db.flush()
     access_token = security.create_access_token(
-        data={"sub": user.username, "type":"access"}
+        data={"sub": user.username, "type":"access", "id": user.id}
     )
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
@@ -40,6 +40,6 @@ async def refresh_tokens(refresh_token: str, db: Session = Depends(dependencies.
     db.commit()
     db.flush()
     access_token = security.create_access_token(
-        data={"sub": user.username, "type":"access"}
+        data={"sub": user.username, "type":"access", "id": user.id}
     )
     return {"access_token": access_token, "refresh_token": refresh_token_new, "token_type": "bearer"}

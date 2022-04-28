@@ -19,7 +19,7 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     return db_user
 
-def update_user(db: Session, user:models.User, user_about: schemas.UserAbout):
+def update_user(db: Session, user:schemas.UserReturn, user_about: schemas.UserAbout):
     db_user = db.query(models.User).filter_by(id=user.id).first()
     db_user.name=user_about.name
     db_user.surname=user_about.surname
@@ -30,7 +30,7 @@ def update_user(db: Session, user:models.User, user_about: schemas.UserAbout):
     db.refresh(db_user)
     return db_user
 
-async def update_user_avatar(db: Session, user:models.User, file: UploadFile=File(...)):
+async def update_user_avatar(db: Session, user:schemas.UserReturn, file: UploadFile=File(...)):
     file.filename = f"{uuid.uuid4()}.png"
     path = f"/static/images/user_avatars/{file.filename}"
     contents = await file.read()
@@ -38,7 +38,7 @@ async def update_user_avatar(db: Session, user:models.User, file: UploadFile=Fil
         f.write(contents)
     
     db_user = db.query(models.User).filter_by(id=user.id).first()
-    if os.path.isfile(f"{main.APP_PATH}{db_user.image_url}"):
+    if db_user.image_url!="/static/images/user_avatars/default.png" and os.path.isfile(f"{main.APP_PATH}{db_user.image_url}"):
         os.remove(f"{main.APP_PATH}{db_user.image_url}")
     db_user.image_url=path
     db.commit()

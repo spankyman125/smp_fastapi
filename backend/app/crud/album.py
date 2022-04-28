@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
 
-from app import models
+from app import models, schemas
 from app.crud.base import ItemBase 
 
 class AlbumCRUD(ItemBase):
@@ -19,7 +19,7 @@ class AlbumCRUD(ItemBase):
             limit(limit).\
             all()   
 
-    def like(self, db: Session, id: int, user: models.User):
+    def like(self, db: Session, id: int, user: schemas.UserReturn):
         like = db.query(self.like_relation).get((user.id, id))
         if like:
             db.delete(like)
@@ -32,7 +32,8 @@ class AlbumCRUD(ItemBase):
             db.refresh(like)
             return True 
 
-    def get_liked(self, user: models.User):
-        return user.albums
+    def get_liked(self, db:Session, user: schemas.UserReturn):
+        db_user = db.query(models.User).filter(models.User.username == user.username).first()
+        return db_user.albums
 
 crud_album = AlbumCRUD(models.Album, models.UserAlbumLike)

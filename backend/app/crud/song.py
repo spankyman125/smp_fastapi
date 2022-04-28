@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
 
-from app import models
+from app import models, schemas
 from app.crud.base import ItemBase 
 
 class SongCRUD(ItemBase):
@@ -19,7 +19,7 @@ class SongCRUD(ItemBase):
             limit(limit).\
             all()   
 
-    def like(self, db: Session, id: int, user: models.User):
+    def like(self, db: Session, id: int, user: schemas.UserReturn):
         like = db.query(self.like_relation).get((user.id, id))
         if like:
             db.delete(like)
@@ -32,7 +32,8 @@ class SongCRUD(ItemBase):
             db.refresh(like)
             return True 
 
-    def get_liked(self, user: models.User):
-        return user.songs
+    def get_liked(self, db:Session, user: schemas.UserReturn):
+        db_user = db.query(models.User).filter(models.User.username == user.username).first()
+        return db_user.songs
 
 crud_song = SongCRUD(model=models.Song, like_relation=models.UserSongLike)

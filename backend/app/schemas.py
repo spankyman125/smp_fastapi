@@ -42,6 +42,13 @@ class ArtistRead(ArtistBase):
     albums: List[AlbumBase]
     songs: List[SongBase]
 
+class UserReturn(BaseModel):
+    id: int
+    username: str
+
+    class Config:
+        orm_mode = True
+
 class User(BaseModel):
     username: str
     class Config:
