@@ -31,8 +31,8 @@ class Song(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
-    duration = Column(Time(timezone=False)) # 2:18
-    file_url = Column(String)  # /static/songs/{id}
+    duration = Column(Time(timezone=False))
+    file_url = Column(String)
     cover_url = Column(String, default="/static/images/song_covers/default.png") # /static/images/song_covers/ (ссылаться на альбом если нету?, или сингл=альбом)
     
     album_id = Column(Integer, ForeignKey("albums.id"))

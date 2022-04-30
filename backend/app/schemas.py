@@ -1,4 +1,5 @@
 import datetime
+from distutils.errors import LinkError
 from typing import List, Optional
 from pydantic import BaseModel
 
@@ -9,7 +10,7 @@ class SongBase(BaseModel):
     duration: datetime.time
     file_url: str
     cover_url: str
-    
+    liked: Optional[bool]
     class Config:
         orm_mode = True
 
@@ -18,6 +19,7 @@ class AlbumBase(BaseModel):
     title: str
     release_date: datetime.date
     cover_url: str
+    liked: Optional[bool]
 
     class Config:
         orm_mode = True
@@ -26,7 +28,7 @@ class ArtistBase(BaseModel):
     id: int
     name: str
     cover_url: str
-
+    liked: Optional[bool]
     class Config:
         orm_mode = True
 
@@ -85,6 +87,14 @@ class Queue(BaseModel):
     class Config:
         orm_mode = True
 class PlaylistAll(BaseModel):
+    id: int
+    name: str
+    cover_url: str
+    songs: List[SongBase]
+    class Config:
+        orm_mode = True
+
+class PlaylistBase(BaseModel):
     id: int
     name: str
     cover_url: str

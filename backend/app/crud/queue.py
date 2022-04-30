@@ -1,7 +1,8 @@
 from app import models, schemas
 from sqlalchemy.orm import joinedload
 from fastapi import HTTPException
-
+from typing import List
+from app.dependencies import add_like_attr
 
 class QueueCRUD():
     def __init__(self):
@@ -15,6 +16,8 @@ class QueueCRUD():
             options(joinedload(models.Song.artists))
         id_map = {t.id: t for t in queue}
         songs = [id_map[n] for n in db_user.queue.songs]
+        add_like_attr(db_user, songs, "songs")
+
         result = {
             "current_position": db_user.queue.current_position,
             "songs": songs 
@@ -65,6 +68,7 @@ class QueueCRUD():
                 options(joinedload(models.Song.album)).\
                 options(joinedload(models.Song.artists)).\
                 first()
+            add_like_attr(db_user, [current_song], "songs")
             return current_song # возвращать только подтверждение?
         else:
             raise HTTPException(status_code=400, detail='Queue is empty')
@@ -81,6 +85,7 @@ class QueueCRUD():
                 options(joinedload(models.Song.album)).\
                 options(joinedload(models.Song.artists)).\
                 first()
+            add_like_attr(db_user, [current_song], "songs")
             return current_song # возвращать только подтверждение?
         else:
             raise HTTPException(status_code=400, detail='No next track')
@@ -97,6 +102,7 @@ class QueueCRUD():
                 options(joinedload(models.Song.album)).\
                 options(joinedload(models.Song.artists)).\
                 first()
+            add_like_attr(db_user, [current_song], "songs")
             return current_song # возвращать только подтверждение?
         else:
             raise HTTPException(status_code=400, detail='No previous track')

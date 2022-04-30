@@ -8,7 +8,7 @@ from app.crud.playlist import crud_playlist
 
 router = APIRouter()
 
-@router.get("/", response_model=List[schemas.PlaylistAll])
+@router.get("/", response_model=List[schemas.PlaylistBase])
 def read_playlists(
         db: Session = Depends(dependencies.get_db),
         current_user: schemas.UserReturn = Depends(dependencies.get_current_user),

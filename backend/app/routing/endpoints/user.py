@@ -1,5 +1,6 @@
 from typing import List
 from urllib import response
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
@@ -73,32 +74,35 @@ def read_user_by_username(
 @router_others.get("/{username}/artists", response_model=List[schemas.ArtistBase])
 def read_artists_by_username(
         username: str,
-        db: Session = Depends(dependencies.get_db)
+        db: Session = Depends(dependencies.get_db),
+        current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional)
     ):
     db_user = crud_user.get_user(db, username=username)
     if db_user is None:
         raise HTTPException(status_code=404, detail='User not found')
-    return crud_artist.get_liked(db=db, user=db_user)
+    return crud_artist.get_liked(db=db, user=db_user,current_user=current_user)
 
 @router_others.get("/{username}/songs", response_model=List[schemas.SongBase])
-def read_songs_by_username(
+async def read_songs_by_username(
         username: str,
-        db: Session = Depends(dependencies.get_db)
+        db: Session = Depends(dependencies.get_db),
+        current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional)
     ):
     db_user = crud_user.get_user(db, username=username)
     if db_user is None:
         raise HTTPException(status_code=404, detail='User not found')
-    return crud_song.get_liked(db=db, user=db_user)
+    return crud_song.get_liked(db=db, user=db_user, current_user=current_user)
 
 @router_others.get("/{username}/albums", response_model=List[schemas.AlbumBase])
 def read_albums_by_username(
         username: str,
-        db: Session = Depends(dependencies.get_db)
+        db: Session = Depends(dependencies.get_db),
+        current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional)
     ):
     db_user = crud_user.get_user(db, username=username)
     if db_user is None:
         raise HTTPException(status_code=404, detail='User not found')
-    return crud_album.get_liked(db=db, user=db_user)
+    return crud_album.get_liked(db=db, user=db_user,current_user=current_user)
 
 @router.post("/", response_model=schemas.UserAll)
 def create_user(
