@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session, joinedload
 from app import models, schemas
 from app.crud.base import ItemBase 
 from app.dependencies import add_like_attr
-from typing import Optional
+from typing import Optional, List
 
 class SongCRUD(ItemBase):
     def get(self, db: Session, id: int, current_user: Optional[schemas.UserReturn] = None):
@@ -18,6 +18,22 @@ class SongCRUD(ItemBase):
             add_like_attr(current_db_user, [song.album], "albums")
             add_like_attr(current_db_user, song.artists, "artists")
         return song
+
+    def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.UserReturn] = None):
+        songs = db.query(models.Song).\
+            filter(models.Song.id.in_(id_list)).\
+            all()
+            # options(joinedload(self.Song.album)).\
+            # options(joinedload(self.Song.artists)).\
+        id_map = {t.id: t for t in songs}
+        songs = [id_map[n] for n in id_list]
+        if current_user:
+            current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
+            for i in range(len(songs)):
+                add_like_attr(current_db_user, [songs[i]], "songs")
+                # add_like_attr(current_db_user, [songs[i].album], "albums")
+                # add_like_attr(current_db_user, songs[i].artists, "artists")
+        return songs
 
     def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.UserReturn] = None):
         songs =  db.query(self.model).\

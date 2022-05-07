@@ -1,4 +1,5 @@
 import pathlib
+from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,6 +7,7 @@ from app.routing.router import api_router
 APP_PATH=pathlib.Path(__file__).parent.resolve()
 
 app = FastAPI()
+es_client = AsyncElasticsearch("http://elastic:9200")
 
 origins = ["*"]
 
@@ -16,6 +18,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("shutdown")
+async def app_shutdown():
+    await es_client.close()
 
 app.mount("/static/images", StaticFiles(directory="app/static/images"), name="static_images")
 app.mount("/static/css", StaticFiles(directory="app/static/css"), name="static_css")

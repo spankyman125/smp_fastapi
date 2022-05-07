@@ -1,5 +1,4 @@
 import datetime
-from distutils.errors import LinkError
 from typing import List, Optional
 from pydantic import BaseModel
 
@@ -7,7 +6,7 @@ from pydantic import BaseModel
 class SongBase(BaseModel):
     id: int
     title: str
-    duration: datetime.time
+    duration: datetime.timedelta
     file_url: str
     cover_url: str
     liked: Optional[bool]

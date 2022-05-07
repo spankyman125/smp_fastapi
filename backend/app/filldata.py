@@ -2,7 +2,7 @@ import datetime
 import random
 import time
 from sqlalchemy.orm import Session
-
+from app import main
 from . import models
 
 def random_date(seed):
@@ -12,12 +12,15 @@ def random_date(seed):
 
 #Test
 def fill_testdata(db: Session):
+    
     albums=[]
     songs=[]
     artists=[]
     song_artists=[]
+    song_tags=[]
     album_artists=[]
-
+    tags=["rock","metal","pop","indie","hip-hop","jazz","blues"]
+    tags_models=[]
     durations=[
         "00:02:08",
         "00:02:03",
@@ -55,6 +58,18 @@ def fill_testdata(db: Session):
         4:[2],
     }
 
+    song_tag_relations = {
+        1:[1,5,4],
+        2:[2,4],
+        3:[3,4],
+        4:[4],
+        5:[2],
+        6:[1,2,4],
+        7:[1,5],
+        8:[6],
+        9:[2],
+        10:[1,4],
+    }
     # 4 альбома и 4 исполнителей
     for i in range(1,5):
         albums.append(
@@ -86,8 +101,12 @@ def fill_testdata(db: Session):
             )
         )
 
-
+    for i in range(1,7):
+        tags_models.append(
+            models.Tag(id=i,name=tags[i])
+        )
     
+    db.add_all(tags_models)
     db.add_all(albums)
     db.commit()
     db.add_all(songs)
@@ -99,6 +118,12 @@ def fill_testdata(db: Session):
             song_artists.append(
                 models.SongArtistRelation(song_id=song, artist_id=artist)
             )
+    
+    for song in song_tag_relations:
+        for tag in song_tag_relations[song]:
+            song_tags.append(
+                models.SongTag(song_id=song, tag_id=tag)
+            )
 
     for album in album_artist_relations:
         for artist in album_artist_relations[album]:
@@ -107,6 +132,7 @@ def fill_testdata(db: Session):
             )
 
     db.add_all(song_artists)
+    db.add_all(song_tags)
     db.add_all(album_artists)
     db.commit()
 

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session, joinedload
 from app import models, schemas
 from app.crud.base import ItemBase 
 from app.dependencies import add_like_attr
-from typing import Optional
+from typing import Optional, List
 
 class ArtistCRUD(ItemBase):
     def get(self, db: Session, id: int, current_user: Optional[schemas.UserReturn] = None):
@@ -32,6 +32,22 @@ class ArtistCRUD(ItemBase):
                 add_like_attr(current_db_user, [artists[i]], "artists")
                 add_like_attr(current_db_user, artists[i].albums, "albums")
                 add_like_attr(current_db_user, artists[i].songs, "songs")
+        return artists
+
+    def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.UserReturn] = None):
+        artists = db.query(models.Artist).\
+            filter(models.Artist.id.in_(id_list)).\
+            all()
+            # options(joinedload(self.model.songs)).\
+            # options(joinedload(self.model.albums)).\
+        id_map = {t.id: t for t in artists}
+        artists = [id_map[n] for n in id_list]
+        if current_user:
+            current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
+            for i in range(len(artists)):
+                add_like_attr(current_db_user, [artists[i]], "artists")
+                # add_like_attr(current_db_user, artists[i].albums, "albums")
+                # add_like_attr(current_db_user, artists[i].songs, "songs")
         return artists
 
     def like(self, db: Session, id: int, user: schemas.UserReturn):
