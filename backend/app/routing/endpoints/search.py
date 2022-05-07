@@ -14,7 +14,7 @@ router = APIRouter()
 async def search_albums(
     name: str,
     db: Session = Depends(dependencies.get_db),
-    current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional),
+    current_user: schemas.User = Depends(dependencies.get_current_user_optional),
     limit: Optional[int]=10
 ):
     result = await main.es_client.search(
@@ -45,7 +45,7 @@ async def search_albums(
 async def search_albums(
     name: str,
     db: Session = Depends(dependencies.get_db),
-    current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional),
+    current_user: schemas.User = Depends(dependencies.get_current_user_optional),
     release_date_from: Optional[datetime.date]=None,
     release_date_to: Optional[datetime.date]=None,
     limit: Optional[int]=10
@@ -85,7 +85,7 @@ async def search_albums(
 async def search_songs(
     name: str,
     db: Session = Depends(dependencies.get_db),
-    current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional),
+    current_user: schemas.User = Depends(dependencies.get_current_user_optional),
     duration_from: Optional[int]=None,
     duration_to: Optional[int]=None,
     tags: Optional[List[str]]=Query([]),

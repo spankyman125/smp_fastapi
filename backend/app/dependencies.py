@@ -48,7 +48,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         username: str = payload.get("sub")
         if (username is None) or (id is None):
             raise credentials_exception
-        user = schemas.UserReturn(id=id, username=username)
+        user = schemas.User(id=id, username=username)
     except JWTError:
         raise token_expire_exception
     return user
@@ -62,7 +62,7 @@ async def get_current_user_optional(token: str = Depends(oauth2_scheme_optional)
         username: str = payload.get("sub")
         if (username is None) or (id is None):
             raise credentials_exception
-        user = schemas.UserReturn(id=id, username=username)
+        user = schemas.User(id=id, username=username)
     except JWTError:
         raise token_expire_exception
     return user

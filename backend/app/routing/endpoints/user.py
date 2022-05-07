@@ -16,7 +16,7 @@ router_others = APIRouter()
 
 @router_me.get("/me", response_model=schemas.UserAll)
 def read_user_self(
-    current_user: schemas.UserReturn = Depends(dependencies.get_current_user),
+    current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
 ):
     db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
@@ -26,7 +26,7 @@ def read_user_self(
 def update_user_about(
     user_about: schemas.UserAbout,
     db: Session = Depends(dependencies.get_db),
-    current_user: schemas.UserReturn = Depends(dependencies.get_current_user), 
+    current_user: schemas.User = Depends(dependencies.get_current_user), 
 ):
     return crud_user.update_user(db, user=current_user, user_about=user_about)
 
@@ -34,27 +34,27 @@ def update_user_about(
 async def upload_avatar(
     file: UploadFile=File(...),
     db: Session = Depends(dependencies.get_db),
-    current_user: schemas.UserReturn = Depends(dependencies.get_current_user), 
+    current_user: schemas.User = Depends(dependencies.get_current_user), 
 ):
     return await crud_user.update_user_avatar(db, user=current_user, file=file)
 
 @router_me.get("/me/artists", response_model=List[schemas.Artist])
 def read_artists_by_self(
-    current_user: schemas.UserReturn = Depends(dependencies.get_current_user),
+    current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
 ): 
     return crud_artist.get_liked(db=db, user=current_user, current_user=current_user)
 
 @router_me.get("/me/songs", response_model=List[schemas.Song])
 def read_songs_by_self(
-    current_user: schemas.UserReturn = Depends(dependencies.get_current_user),
+    current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
 ):
     return crud_song.get_liked(db=db, user=current_user, current_user=current_user)
 
 @router_me.get("/me/albums", response_model=List[schemas.Album])
 def read_albums_by_self(
-    current_user: schemas.UserReturn = Depends(dependencies.get_current_user),
+    current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
 ):
     return crud_album.get_liked(db=db, user=current_user, current_user=current_user)
@@ -73,7 +73,7 @@ def read_user_by_username(
 def read_artists_by_username(
         username: str,
         db: Session = Depends(dependencies.get_db),
-        current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional)
+        current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
     db_user = crud_user.get_user(db, username=username)
     if db_user is None:
@@ -84,7 +84,7 @@ def read_artists_by_username(
 async def read_songs_by_username(
         username: str,
         db: Session = Depends(dependencies.get_db),
-        current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional)
+        current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
     db_user = crud_user.get_user(db, username=username)
     if db_user is None:
@@ -95,7 +95,7 @@ async def read_songs_by_username(
 def read_albums_by_username(
         username: str,
         db: Session = Depends(dependencies.get_db),
-        current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional)
+        current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
     db_user = crud_user.get_user(db, username=username)
     if db_user is None:

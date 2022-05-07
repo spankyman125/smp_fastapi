@@ -6,7 +6,7 @@ from app.dependencies import add_like_attr
 from typing import Optional, List
 
 class ArtistCRUD(ItemBase):
-    def get(self, db: Session, id: int, current_user: Optional[schemas.UserReturn] = None):
+    def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
         artist = db.query(self.model).\
             options(joinedload(self.model.songs)).\
             options(joinedload(self.model.albums)).\
@@ -19,7 +19,7 @@ class ArtistCRUD(ItemBase):
             add_like_attr(current_db_user, artist.songs, "songs")
         return artist
     
-    def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.UserReturn] = None):
+    def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
         artists = db.query(self.model).\
             options(joinedload(self.model.songs)).\
             options(joinedload(self.model.albums)).\
@@ -34,7 +34,7 @@ class ArtistCRUD(ItemBase):
                 add_like_attr(current_db_user, artists[i].songs, "songs")
         return artists
 
-    def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.UserReturn] = None):
+    def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None):
         artists = db.query(models.Artist).\
             filter(models.Artist.id.in_(id_list)).\
             all()
@@ -50,7 +50,7 @@ class ArtistCRUD(ItemBase):
                 # add_like_attr(current_db_user, artists[i].songs, "songs")
         return artists
 
-    def like(self, db: Session, id: int, user: schemas.UserReturn):
+    def like(self, db: Session, id: int, user: schemas.User):
         like = db.query(self.like_relation).get((user.id, id))
         if like:
             db.delete(like)
@@ -66,8 +66,8 @@ class ArtistCRUD(ItemBase):
     def get_liked(
         self,
         db:Session,
-        user: schemas.UserReturn,
-        current_user: Optional[schemas.UserReturn] = None
+        user: schemas.User,
+        current_user: Optional[schemas.User] = None
     ):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         if current_user:

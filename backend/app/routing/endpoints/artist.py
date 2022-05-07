@@ -13,7 +13,7 @@ router = APIRouter()
 def read_artist(
         id: int, 
         db: Session = Depends(dependencies.get_db),
-        current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional)
+        current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
     return artist_endpoint.read(db, id, current_user)
 
@@ -21,7 +21,7 @@ def read_artist(
 def like_artist(
         id: int, 
         db: Session = Depends(dependencies.get_db), 
-        current_user: schemas.UserReturn = Depends(dependencies.get_current_user)
+        current_user: schemas.User = Depends(dependencies.get_current_user)
     ):
     return artist_endpoint.like(db, id, current_user)
 
@@ -30,6 +30,6 @@ def read_artists(
         skip: int = 0, 
         limit: int = 100, 
         db: Session = Depends(dependencies.get_db),
-        current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional)
+        current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
     return artist_endpoint.read_all(db, skip, limit, current_user)

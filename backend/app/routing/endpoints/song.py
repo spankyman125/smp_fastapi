@@ -11,7 +11,7 @@ router = APIRouter()
 def read_song(
         id: int, 
         db: Session = Depends(dependencies.get_db),
-        current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional)
+        current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
     return song_endpoint.read(db, id, current_user)
 
@@ -19,7 +19,7 @@ def read_song(
 def like_song(
         id: int, 
         db: Session = Depends(dependencies.get_db), 
-        current_user: schemas.UserReturn = Depends(dependencies.get_current_user)
+        current_user: schemas.User = Depends(dependencies.get_current_user)
     ):
     return song_endpoint.like(db, id, current_user)
 
@@ -28,6 +28,6 @@ def read_songs(
         skip: int = 0, 
         limit: int = 100, 
         db: Session = Depends(dependencies.get_db),
-        current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional)
+        current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
     return song_endpoint.read_all(db, skip, limit, current_user)

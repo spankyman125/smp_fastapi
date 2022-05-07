@@ -13,7 +13,7 @@ router = APIRouter()
 @router.get("/")
 def get_tags(
         db: Session = Depends(dependencies.get_db),
-        current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional)
+        current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
     return crud_tag.get_all(db)
 
@@ -22,6 +22,6 @@ def get_tags(
 def get_songs_by_tags(
         tags: List[str]=Query([]),
         db: Session = Depends(dependencies.get_db),
-        current_user: schemas.UserReturn = Depends(dependencies.get_current_user_optional),
+        current_user: schemas.User = Depends(dependencies.get_current_user_optional),
     ):
     return crud_tag.get_songs(db=db, tags=tags)
