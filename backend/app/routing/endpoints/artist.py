@@ -9,7 +9,7 @@ from .endpoint_item import artist_endpoint
 
 router = APIRouter()
 
-@router.get("/{id}", response_model=schemas.ArtistRead)
+@router.get("/{id}", response_model=schemas.ArtistLoaded)
 def read_artist(
         id: int, 
         db: Session = Depends(dependencies.get_db),
@@ -25,7 +25,7 @@ def like_artist(
     ):
     return artist_endpoint.like(db, id, current_user)
 
-@router.get("/", response_model=List[schemas.ArtistRead])
+@router.get("/", response_model=List[schemas.ArtistLoaded])
 def read_artists(
         skip: int = 0, 
         limit: int = 100, 

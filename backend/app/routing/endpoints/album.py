@@ -9,7 +9,7 @@ from .endpoint_item import album_endpoint
 
 router = APIRouter()
 
-@router.get("/{id}", response_model=schemas.AlbumRead)
+@router.get("/{id}", response_model=schemas.AlbumLoaded)
 def read_album(
         id: int,
         db: Session = Depends(dependencies.get_db),
@@ -25,7 +25,7 @@ def like_artist(
     ):
     return album_endpoint.like(db, id, current_user)
 
-@router.get("/", response_model=List[schemas.AlbumRead])
+@router.get("/", response_model=List[schemas.AlbumLoaded])
 def read_albums(
         skip: int = 0,
         limit: int = 100,

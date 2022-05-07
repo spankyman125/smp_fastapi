@@ -7,7 +7,7 @@ from .endpoint_item import song_endpoint
 
 router = APIRouter()
 
-@router.get("/{id}", response_model=schemas.SongRead)
+@router.get("/{id}", response_model=schemas.SongLoaded)
 def read_song(
         id: int, 
         db: Session = Depends(dependencies.get_db),
@@ -23,7 +23,7 @@ def like_song(
     ):
     return song_endpoint.like(db, id, current_user)
 
-@router.get("/", response_model=List[schemas.SongRead])
+@router.get("/", response_model=List[schemas.SongLoaded])
 def read_songs(
         skip: int = 0, 
         limit: int = 100, 

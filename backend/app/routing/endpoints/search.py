@@ -10,7 +10,7 @@ from app.crud.artist import  crud_artist
 
 router = APIRouter()
 
-@router.get("/artists/", response_model=List[schemas.ArtistBase])
+@router.get("/artists/", response_model=List[schemas.Artist])
 async def search_albums(
     name: str,
     db: Session = Depends(dependencies.get_db),
@@ -41,7 +41,7 @@ async def search_albums(
     else:
         return []
 
-@router.get("/albums/", response_model=List[schemas.AlbumBase])
+@router.get("/albums/", response_model=List[schemas.Album])
 async def search_albums(
     name: str,
     db: Session = Depends(dependencies.get_db),
@@ -81,7 +81,7 @@ async def search_albums(
     else:
         return []
 
-@router.get("/songs/", response_model=List[schemas.SongBase])
+@router.get("/songs/", response_model=List[schemas.Song])
 async def search_songs(
     name: str,
     db: Session = Depends(dependencies.get_db),

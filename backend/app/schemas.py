@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
-class SongBase(BaseModel):
+class Song(BaseModel):
     id: int
     title: str
     duration: datetime.timedelta
@@ -13,7 +13,7 @@ class SongBase(BaseModel):
     class Config:
         orm_mode = True
 
-class AlbumBase(BaseModel):
+class Album(BaseModel):
     id: int
     title: str
     release_date: datetime.date
@@ -23,7 +23,7 @@ class AlbumBase(BaseModel):
     class Config:
         orm_mode = True
 
-class ArtistBase(BaseModel):
+class Artist(BaseModel):
     id: int
     name: str
     cover_url: str
@@ -31,17 +31,24 @@ class ArtistBase(BaseModel):
     class Config:
         orm_mode = True
 
-class SongRead(SongBase):
-    album: AlbumBase
-    artists: List[ArtistBase]
+class Tag(BaseModel):
+    id: int
+    name: str
+    class Config:
+        orm_mode = True
 
-class AlbumRead(AlbumBase):
-    songs: List[SongBase]
-    artists: List[ArtistBase]
+class SongLoaded(Song):
+    album: Album
+    artists: List[Artist]
+    tags: Optional[List[Tag]]
 
-class ArtistRead(ArtistBase):
-    albums: List[AlbumBase]
-    songs: List[SongBase]
+class AlbumLoaded(Album):
+    songs: List[Song]
+    artists: List[Artist]
+
+class ArtistLoaded(Artist):
+    albums: List[Album]
+    songs: List[Song]
 
 class UserReturn(BaseModel):
     id: int
@@ -82,23 +89,19 @@ class UserAbout(BaseModel):
 
 class Queue(BaseModel):
     current_position: int
-    songs: List[SongBase]
-    class Config:
-        orm_mode = True
-class PlaylistAll(BaseModel):
-    id: int
-    name: str
-    cover_url: str
-    songs: List[SongBase]
+    songs: List[Song]
     class Config:
         orm_mode = True
 
-class PlaylistBase(BaseModel):
+class Playlist(BaseModel):
     id: int
     name: str
     cover_url: str
     class Config:
         orm_mode = True
+
+class PlaylistLoaded(Playlist):
+    songs: List[Song]
 
 class Token(BaseModel):
     access_token: str
