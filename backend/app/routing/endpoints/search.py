@@ -11,7 +11,7 @@ from app.crud.artist import  crud_artist
 router = APIRouter()
 
 @router.get("/artists/", response_model=List[schemas.Artist])
-async def search_albums(
+async def search_artists(
     name: str,
     db: Session = Depends(dependencies.get_db),
     current_user: schemas.User = Depends(dependencies.get_current_user_optional),

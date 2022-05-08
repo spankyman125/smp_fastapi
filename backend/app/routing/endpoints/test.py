@@ -1,5 +1,3 @@
-import datetime
-from operator import index
 from typing import List
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
@@ -25,21 +23,21 @@ async def get_document(id: int, index):
     return await main.es_client.get(index=index, id=id)
 
 @router.get("/delete-all-indexes/")
-async def create_default_index():
+async def delete_all_indexes():
     await main.es_client.indices.delete(index="albums")
     await main.es_client.indices.delete(index="artists")
     await main.es_client.indices.delete(index="songs")
     return True
 
 @router.get("/create-all-indexes/")
-async def create_default_index():
+async def create_default_indexes():
     await main.es_client.indices.create(index="albums", settings=index_conf.settings, mappings=index_conf.mappings_albums)
     await main.es_client.indices.create(index="artists",settings=index_conf.settings, mappings=index_conf.mappings_artists)
     await main.es_client.indices.create(index="songs",  settings=index_conf.settings, mappings=index_conf.mappings_songs)
     return True
 
 @router.get("/update-albums-docs/")
-async def update_album_docs(db: Session = Depends(dependencies.get_db)):
+async def update_albums_docs(db: Session = Depends(dependencies.get_db)):
     albums = db.query(models.Album).options(load_only("id","title","release_date")).all()
     operations=[]
     for album in albums:
@@ -56,7 +54,7 @@ async def update_album_docs(db: Session = Depends(dependencies.get_db)):
     return await main.es_client.bulk(operations=operations)
 
 @router.get("/update-artists-docs/")
-async def update_album_index(db: Session = Depends(dependencies.get_db)):
+async def update_artists_docs(db: Session = Depends(dependencies.get_db)):
     artists = db.query(models.Artist).options(load_only("id","name")).all()
     operations=[]
     for artist in artists:
@@ -72,7 +70,7 @@ async def update_album_index(db: Session = Depends(dependencies.get_db)):
     return await main.es_client.bulk(operations=operations)
 
 @router.get("/update-songs-docs/")
-async def update_album_index(db: Session = Depends(dependencies.get_db)):
+async def update_songs_docs(db: Session = Depends(dependencies.get_db)):
     songs = db.query(models.Song).options(load_only("id","title","duration")).options(joinedload(models.Song.tags)).all()
     operations=[]
     for song in songs:
