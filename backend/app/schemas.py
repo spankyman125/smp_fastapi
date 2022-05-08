@@ -36,10 +36,13 @@ class Tag(BaseModel):
     class Config:
         orm_mode = True
 
+class SongTagged(Song):
+    tags: List[Tag]
+
 class SongLoaded(Song):
     album: Album
     artists: List[Artist]
-    tags: Optional[List[Tag]]
+    tags: List[Tag]
 
 class AlbumLoaded(Album):
     songs: List[Song]
