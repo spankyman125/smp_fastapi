@@ -10,14 +10,14 @@ class PlaylistCRUD():
     def __init__(self):
         pass
 
-    def create(self, db, user:schemas.UserReturn, name: str):
+    def create(self, db, user:schemas.User, name: str):
         playlist = models.Playlist(name=name, user_id=user.id, songs=[])
         db.add(playlist)
         db.commit()
         db.refresh(playlist)
         return playlist
 
-    def get(self, db, user:schemas.UserReturn, id:int):
+    def get(self, db, user:schemas.User, id:int):
         playlist = db.query(models.Playlist).filter_by(id=id).first()
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         if playlist and playlist.user_id == user.id:
@@ -41,7 +41,7 @@ class PlaylistCRUD():
         else:
             raise HTTPException(status_code=404, detail='Playlist not found')
 
-    def get_all(self, db: Session, user:schemas.UserReturn):
+    def get_all(self, db: Session, user:schemas.User):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         return db_user.playlists
 
@@ -64,7 +64,7 @@ class PlaylistCRUD():
         else:
             raise HTTPException(status_code=404, detail='Playlist not found')
 
-    def add(self, db, user:schemas.UserReturn, song_id: int, playlist_id: int):
+    def add(self, db, user:schemas.User, song_id: int, playlist_id: int):
         playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
         if playlist and playlist.user_id == user.id:
             if bool(db.query(models.Song.id).filter_by(id=song_id).first()):            
@@ -78,7 +78,7 @@ class PlaylistCRUD():
         else:
             raise HTTPException(status_code=404, detail='Playlist not found')
 
-    def add_list(self, db, user:schemas.UserReturn, playlist_id: int, song_list: List[int]):    
+    def add_list(self, db, user:schemas.User, playlist_id: int, song_list: List[int]):    
         playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
         if playlist and playlist.user_id == user.id:   
             check = db.query(models.Song).\
@@ -96,7 +96,7 @@ class PlaylistCRUD():
         else:
             raise HTTPException(status_code=404, detail='Playlist not found')
 
-    def remove(self, db, user:schemas.UserReturn, position: int, playlist_id: int):
+    def remove(self, db, user:schemas.User, position: int, playlist_id: int):
         playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
         if playlist and playlist.user_id == user.id:
             if len(playlist.songs) > position:
@@ -112,7 +112,7 @@ class PlaylistCRUD():
         else:
             raise HTTPException(status_code=404, detail='Playlist not found')
 
-    def delete(self, db, user:schemas.UserReturn, playlist_id: int):
+    def delete(self, db, user:schemas.User, playlist_id: int):
         playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
         if playlist and playlist.user_id == user.id:
             db.delete(playlist)

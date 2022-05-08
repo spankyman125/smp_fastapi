@@ -1,20 +1,18 @@
 import datetime
-from distutils.errors import LinkError
 from typing import List, Optional
 from pydantic import BaseModel
 
-
-class SongBase(BaseModel):
+class Song(BaseModel):
     id: int
     title: str
-    duration: datetime.time
+    duration: datetime.timedelta
     file_url: str
     cover_url: str
     liked: Optional[bool]
     class Config:
         orm_mode = True
 
-class AlbumBase(BaseModel):
+class Album(BaseModel):
     id: int
     title: str
     release_date: datetime.date
@@ -24,7 +22,7 @@ class AlbumBase(BaseModel):
     class Config:
         orm_mode = True
 
-class ArtistBase(BaseModel):
+class Artist(BaseModel):
     id: int
     name: str
     cover_url: str
@@ -32,27 +30,29 @@ class ArtistBase(BaseModel):
     class Config:
         orm_mode = True
 
-class SongRead(SongBase):
-    album: AlbumBase
-    artists: List[ArtistBase]
-
-class AlbumRead(AlbumBase):
-    songs: List[SongBase]
-    artists: List[ArtistBase]
-
-class ArtistRead(ArtistBase):
-    albums: List[AlbumBase]
-    songs: List[SongBase]
-
-class UserReturn(BaseModel):
+class Tag(BaseModel):
     id: int
-    username: str
-
+    name: str
     class Config:
         orm_mode = True
 
+class SongLoaded(Song):
+    album: Album
+    artists: List[Artist]
+    tags: Optional[List[Tag]]
+
+class AlbumLoaded(Album):
+    songs: List[Song]
+    artists: List[Artist]
+
+class ArtistLoaded(Artist):
+    albums: List[Album]
+    songs: List[Song]
+
 class User(BaseModel):
+    id: int
     username: str
+
     class Config:
         orm_mode = True
 
@@ -70,7 +70,8 @@ class UserAll(BaseModel):
 class UserUpdateImage(User):
     image_url: str
 
-class UserCreate(User):
+class UserCreate(BaseModel):
+    username: str
     password: str
 
 class UserAbout(BaseModel):
@@ -83,23 +84,19 @@ class UserAbout(BaseModel):
 
 class Queue(BaseModel):
     current_position: int
-    songs: List[SongBase]
-    class Config:
-        orm_mode = True
-class PlaylistAll(BaseModel):
-    id: int
-    name: str
-    cover_url: str
-    songs: List[SongBase]
+    songs: List[Song]
     class Config:
         orm_mode = True
 
-class PlaylistBase(BaseModel):
+class Playlist(BaseModel):
     id: int
     name: str
     cover_url: str
     class Config:
         orm_mode = True
+
+class PlaylistLoaded(Playlist):
+    songs: List[Song]
 
 class Token(BaseModel):
     access_token: str

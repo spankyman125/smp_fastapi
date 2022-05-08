@@ -1,5 +1,5 @@
 from unicodedata import name
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date, Time, Interval
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
 
@@ -31,13 +31,14 @@ class Song(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
-    duration = Column(Time(timezone=False))
+    duration = Column(Interval)
     file_url = Column(String)
     cover_url = Column(String, default="/static/images/song_covers/default.png") # /static/images/song_covers/ (ссылаться на альбом если нету?, или сингл=альбом)
-    
+
     album_id = Column(Integer, ForeignKey("albums.id"))
 
     album = relationship("Album", back_populates="songs")
+    tags = relationship("Tag", secondary="song_tag", back_populates="songs")
     artists = relationship("Artist", secondary="song_artist", back_populates="songs")
     users = relationship("User", secondary="user_song", back_populates="songs")
 
@@ -49,9 +50,7 @@ class Album(Base):
     title = Column(String)
     release_date = Column(Date)
     cover_url = Column(String, default="/static/images/album_covers/default.png") # /static/images/album_covers/
-    # is_single = Column(Boolean) 
 
-    #jenre relationship fk
     songs = relationship("Song", back_populates="album")
     artists = relationship("Artist", secondary="album_artist", back_populates="albums")
     users = relationship("User", secondary="user_album", back_populates="albums")
@@ -89,6 +88,14 @@ class Playlist(Base):
 
     user = relationship("User", back_populates="playlists")
 
+class Tag(Base):
+    __tablename__ = "tags"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+
+    songs = relationship("Song", secondary="song_tag", back_populates="tags")
+
 class SongArtistRelation(Base):
     __tablename__ = "song_artist"
 
@@ -122,3 +129,9 @@ class UserArtistLike(Base):
 
     user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
     artist_id = Column(Integer, ForeignKey("artists.id"), primary_key=True)
+
+class SongTag(Base):
+    __tablename__ = "song_tag"
+
+    song_id = Column(Integer, ForeignKey("songs.id"), primary_key=True)
+    tag_id = Column(Integer, ForeignKey("tags.id"), primary_key=True)
