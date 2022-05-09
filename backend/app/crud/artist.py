@@ -12,7 +12,7 @@ class ArtistCRUD(ItemBase):
             options(joinedload(self.model.albums)).\
             filter(self.model.id == id).\
             first()
-        if current_user:
+        if current_user and artist:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
             add_like_attr(current_db_user, [artist], "artists")
             add_like_attr(current_db_user, artist.albums, "albums")

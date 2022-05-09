@@ -1,11 +1,14 @@
 from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from fastapi import HTTPException
 
 from app import models
 from app import schemas
 from app import dependencies
-from .endpoint_item import album_endpoint
+# from .endpoint_item import album_endpoint
+from app.crud.album import crud_album
+
 
 router = APIRouter()
 
@@ -15,15 +18,21 @@ def read_album(
         db: Session = Depends(dependencies.get_db),
         current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
-    return album_endpoint.read(db, id, current_user)
+    album = crud_album.get(db, id, current_user)
+    if album is None:
+        raise HTTPException(status_code=404, detail='Item not found')
+    return album
 
 @router.put("/{id}/like")
-def like_artist(
+def like_album(
         id: int, 
         db: Session = Depends(dependencies.get_db), 
         current_user: schemas.User = Depends(dependencies.get_current_user)
     ):
-    return album_endpoint.like(db, id, current_user)
+    album = crud_album.get(db, id, current_user)
+    if album is None:
+        raise HTTPException(status_code=404, detail='Item not found')
+    return crud_album.like(db, id, current_user)
 
 @router.get("/", response_model=List[schemas.AlbumLoaded])
 def read_albums(
@@ -32,4 +41,4 @@ def read_albums(
         db: Session = Depends(dependencies.get_db),
         current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
-    return album_endpoint.read_all(db, skip, limit, current_user)
+    return crud_album.get_all(db, skip, limit, current_user)
