@@ -1,11 +1,15 @@
 from typing import List
+from fastapi import HTTPException
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app import models
 from app import schemas
 from app import dependencies
-from .endpoint_item import artist_endpoint
+# from .endpoint_item import artist_endpoint
+from app.crud.artist import crud_artist
+
 
 router = APIRouter()
 
@@ -15,7 +19,10 @@ def read_artist(
         db: Session = Depends(dependencies.get_db),
         current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
-    return artist_endpoint.read(db, id, current_user)
+    artist = crud_artist.get(db, id, current_user)
+    if artist is None:
+        raise HTTPException(status_code=404, detail='Item not found')
+    return artist
 
 @router.put("/{id}/like")
 def like_artist(
@@ -23,7 +30,10 @@ def like_artist(
         db: Session = Depends(dependencies.get_db), 
         current_user: schemas.User = Depends(dependencies.get_current_user)
     ):
-    return artist_endpoint.like(db, id, current_user)
+    artist = crud_artist.get(db, id, current_user)
+    if artist is None:
+        raise HTTPException(status_code=404, detail='Item not found')
+    return crud_artist.like(db, id, current_user)
 
 @router.get("/", response_model=List[schemas.ArtistLoaded])
 def read_artists(
@@ -32,4 +42,4 @@ def read_artists(
         db: Session = Depends(dependencies.get_db),
         current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
-    return artist_endpoint.read_all(db, skip, limit, current_user)
+    return crud_artist.get_all(db, skip, limit, current_user)
