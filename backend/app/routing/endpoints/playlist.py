@@ -66,6 +66,14 @@ def delete_playlist(
     ):
     return crud_playlist.delete(db, current_user, id)
 
+@router.delete("/{id}/clear")
+def clear_playlist(
+        id: int,
+        db: Session = Depends(dependencies.get_db),
+        current_user: schemas.User = Depends(dependencies.get_current_user),
+    ):
+    return crud_playlist.clear(db, current_user, id)
+
 @router.delete("/{id}/delete")
 def remove_song(
         id: int,
