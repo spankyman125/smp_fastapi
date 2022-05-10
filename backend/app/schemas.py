@@ -45,12 +45,12 @@ class SongLoaded(Song):
     tags: List[Tag]
 
 class AlbumLoaded(Album):
-    songs: List[Song]
+    songs: List[SongLoaded]
     artists: List[Artist]
 
 class ArtistLoaded(Artist):
     albums: List[Album]
-    songs: List[Song]
+    songs: List[SongLoaded]
 
 class User(BaseModel):
     id: int
@@ -87,7 +87,7 @@ class UserAbout(BaseModel):
 
 class Queue(BaseModel):
     current_position: int
-    songs: List[Song]
+    songs: List[SongLoaded]
     class Config:
         orm_mode = True
 
@@ -99,7 +99,7 @@ class Playlist(BaseModel):
         orm_mode = True
 
 class PlaylistLoaded(Playlist):
-    songs: List[Song]
+    songs: List[SongLoaded]
 
 class Token(BaseModel):
     access_token: str
