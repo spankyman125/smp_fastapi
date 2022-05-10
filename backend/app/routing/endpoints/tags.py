@@ -10,6 +10,7 @@ from typing import List, Optional
 
 router = APIRouter()
 
+@router.get("", include_in_schema=False)
 @router.get("/")
 def get_tags(
         db: Session = Depends(dependencies.get_db),
@@ -17,7 +18,8 @@ def get_tags(
     ):
     return crud_tag.get_all(db)
 
-@router.get("/songs", response_model=List[schemas.SongTagged])
+@router.get("/songs", response_model=List[schemas.SongTagged], include_in_schema=False)
+@router.get("/songs/", response_model=List[schemas.SongTagged])
 def get_songs_by_tags(
         skip: int = 0, 
         limit: int = 100, 

@@ -14,7 +14,8 @@ router = APIRouter()
 router_me = APIRouter()
 router_others = APIRouter()
 
-@router_me.get("/me", response_model=schemas.UserAll)
+@router_me.get("/me", response_model=schemas.UserAll, include_in_schema=False)
+@router_me.get("/me/", response_model=schemas.UserAll)
 def read_user_self(
     current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
@@ -22,7 +23,8 @@ def read_user_self(
     db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
     return db_user
 
-@router_me.post("/me", response_model=schemas.UserAbout)
+@router_me.post("/me", response_model=schemas.UserAbout, include_in_schema=False)
+@router_me.post("/me/", response_model=schemas.UserAbout)
 def update_user_about(
     user_about: schemas.UserAbout,
     db: Session = Depends(dependencies.get_db),
@@ -30,7 +32,8 @@ def update_user_about(
 ):
     return crud_user.update_user(db, user=current_user, user_about=user_about)
 
-@router_me.post("/me/upload-image", response_model=schemas.UserUpdateImage)
+@router_me.post("/me/upload-image", response_model=schemas.UserUpdateImage, include_in_schema=False)
+@router_me.post("/me/upload-image/", response_model=schemas.UserUpdateImage)
 async def upload_avatar(
     file: UploadFile=File(...),
     db: Session = Depends(dependencies.get_db),
@@ -38,28 +41,32 @@ async def upload_avatar(
 ):
     return await crud_user.update_user_avatar(db, user=current_user, file=file)
 
-@router_me.get("/me/artists", response_model=List[schemas.Artist])
+@router_me.get("/me/artists", response_model=List[schemas.Artist], include_in_schema=False)
+@router_me.get("/me/artists/", response_model=List[schemas.Artist])
 def read_artists_by_self(
     current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
 ): 
     return crud_artist.get_liked(db=db, user=current_user, current_user=current_user)
 
-@router_me.get("/me/songs", response_model=List[schemas.Song])
+@router_me.get("/me/songs", response_model=List[schemas.Song], include_in_schema=False)
+@router_me.get("/me/songs/", response_model=List[schemas.Song])
 def read_songs_by_self(
     current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
 ):
     return crud_song.get_liked(db=db, user=current_user, current_user=current_user)
 
-@router_me.get("/me/albums", response_model=List[schemas.Album])
+@router_me.get("/me/albums", response_model=List[schemas.Album], include_in_schema=False)
+@router_me.get("/me/albums/", response_model=List[schemas.Album])
 def read_albums_by_self(
     current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
 ):
     return crud_album.get_liked(db=db, user=current_user, current_user=current_user)
 
-@router_others.get("/{username}", response_model=schemas.UserAll)
+@router_others.get("/{username}", response_model=schemas.UserAll, include_in_schema=False)
+@router_others.get("/{username}/", response_model=schemas.UserAll)
 def read_user_by_username(
         username: str, 
         db: Session = Depends(dependencies.get_db)
@@ -69,7 +76,8 @@ def read_user_by_username(
         raise HTTPException(status_code=404, detail='User not found')
     return user
 
-@router_others.get("/{username}/artists", response_model=List[schemas.Artist])
+@router_others.get("/{username}/artists", response_model=List[schemas.Artist], include_in_schema=False)
+@router_others.get("/{username}/artists/", response_model=List[schemas.Artist])
 def read_artists_by_username(
         username: str,
         db: Session = Depends(dependencies.get_db),
@@ -80,7 +88,8 @@ def read_artists_by_username(
         raise HTTPException(status_code=404, detail='User not found')
     return crud_artist.get_liked(db=db, user=db_user,current_user=current_user)
 
-@router_others.get("/{username}/songs", response_model=List[schemas.Song])
+@router_others.get("/{username}/songs", response_model=List[schemas.Song], include_in_schema=False)
+@router_others.get("/{username}/songs/", response_model=List[schemas.Song])
 async def read_songs_by_username(
         username: str,
         db: Session = Depends(dependencies.get_db),
@@ -91,7 +100,8 @@ async def read_songs_by_username(
         raise HTTPException(status_code=404, detail='User not found')
     return crud_song.get_liked(db=db, user=db_user, current_user=current_user)
 
-@router_others.get("/{username}/albums", response_model=List[schemas.Album])
+@router_others.get("/{username}/albums", response_model=List[schemas.Album], include_in_schema=False)
+@router_others.get("/{username}/albums/", response_model=List[schemas.Album])
 def read_albums_by_username(
         username: str,
         db: Session = Depends(dependencies.get_db),
@@ -102,6 +112,7 @@ def read_albums_by_username(
         raise HTTPException(status_code=404, detail='User not found')
     return crud_album.get_liked(db=db, user=db_user,current_user=current_user)
 
+@router.post("", response_model=schemas.UserAll, include_in_schema=False)
 @router.post("/", response_model=schemas.UserAll)
 def create_user(
         user: schemas.UserCreate, 
