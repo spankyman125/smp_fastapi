@@ -1,14 +1,37 @@
 from typing import List
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import load_only
 from sqlalchemy.orm import joinedload
 from typing import Optional, List
-from app import index_conf
-from app import dependencies, filldata, models
+from app import index_conf, security
+from app import dependencies, filldata, models, schemas
 from app import main
+from fastapi.security import OAuth2PasswordRequestForm
+from app.crud import user as crud_user
+
+
+
 
 router = APIRouter()
+
+@router.post("/get-super-token", response_model=schemas.Token)
+async def get_super_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(dependencies.get_db)):
+    user = crud_user.authenticate_user(form_data.username, form_data.password, db)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    refresh_token = security.create_refresh_token()
+    user.refresh_token = refresh_token
+    db.commit()
+    db.flush()
+    access_token = security.create_super_access_token(
+        data={"sub": user.username, "type":"access", "id": user.id}
+    )
+    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
 @router.get("/filldata")
 def root(db: Session = Depends(dependencies.get_db)):

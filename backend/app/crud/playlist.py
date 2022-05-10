@@ -95,6 +95,17 @@ class PlaylistCRUD():
                 raise HTTPException(status_code=400, detail='Wrong id provided')
         else:
             raise HTTPException(status_code=404, detail='Playlist not found')
+   
+   
+    def clear(self, db, user: schemas.User, playlist_id: int,):
+        playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
+        if playlist and playlist.user_id == user.id:   
+            playlist.songs = []
+            db.commit()
+            db.flush()
+            db.refresh(playlist)
+            return playlist # возвращать только подтверждение?
+
 
     def remove(self, db, user:schemas.User, position: int, playlist_id: int):
         playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
