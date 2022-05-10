@@ -9,6 +9,7 @@ from app.crud import user as crud_user
 from app.crud.artist import crud_artist
 from app.crud.song import crud_song
 from app.crud.album import crud_album 
+import re
 
 router = APIRouter()
 router_me = APIRouter()
@@ -107,6 +108,10 @@ def create_user(
         user: schemas.UserCreate, 
         db: Session = Depends(dependencies.get_db)
     ):
+    if not (len(user.username) >= 3 and len(user.username) <= 15) or not re.search(r"^[A-Za-z0-9_]+$", user.username):
+        raise HTTPException(status_code=422, detail="Username can be 3 to 15 characters, no special characters")
+    if not (len(user.password) >= 3 and len(user.password) <= 15):
+        raise HTTPException(status_code=422, detail="Password can be 3 to 15 characters")
     db_user = crud_user.get_user(db, user.username)
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
