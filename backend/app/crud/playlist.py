@@ -4,7 +4,7 @@ from app import models, main, schemas
 from sqlalchemy.orm import joinedload, Session
 from fastapi import HTTPException, UploadFile, File
 from typing import List
-from app.dependencies import add_like_attr
+from app.crud.song import add_like_attr
 
 class PlaylistCRUD():
     def __init__(self):
@@ -28,7 +28,7 @@ class PlaylistCRUD():
                     options(joinedload(models.Song.artists))
                 id_map = {t.id: t for t in playlist_joined}
                 songs = [id_map[n] for n in playlist.songs]
-                add_like_attr(db_user, songs, "songs")
+                add_like_attr(db_user, songs)
                 result = {
                     "id": playlist.id,
                     "name": playlist.name,

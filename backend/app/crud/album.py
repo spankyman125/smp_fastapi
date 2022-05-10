@@ -2,8 +2,29 @@ from sqlalchemy.orm import Session, joinedload
 
 from app import models, schemas
 from app.crud.base import ItemBase 
-from app.dependencies import add_like_attr
 from typing import Optional, List
+
+def add_like_attr(user: models.User, albums):
+    liked_songs_id = []
+    liked_albums_id = []
+    liked_artists_id = []
+
+    for liked_song in user.songs:
+        liked_songs_id.append(liked_song.id)
+    for liked_album in user.albums:
+        liked_albums_id.append(liked_album.id)
+    for liked_artist in user.artists:
+        liked_artists_id.append(liked_artist.id)
+    
+    for album in albums:
+        setattr(album, "liked", True) if album.id in liked_albums_id else setattr(album, "liked", False)
+        for artist in album.artists:
+            setattr(artist, "liked", True) if artist.id in liked_artists_id else setattr(artist, "liked", False)
+        for song in album.songs:
+            setattr(song, "liked", True) if song.id in liked_songs_id else setattr(song, "liked", False)
+            setattr(song.album, "liked", True) if song.album.id in liked_albums_id else setattr(song.album, "liked", False)
+            for artist in song.artists:
+                setattr(artist, "liked", True) if artist.id in liked_artists_id else setattr(artist, "liked", False)
 
 class AlbumCRUD(ItemBase):
     def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
@@ -14,40 +35,34 @@ class AlbumCRUD(ItemBase):
             first()
         if current_user and album:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
-            add_like_attr(current_db_user, [album], "albums")
-            add_like_attr(current_db_user, album.songs, "songs")
-            add_like_attr(current_db_user, album.artists, "artists")
+            add_like_attr(current_db_user, [album])
         return album
 
     def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None):
         albums = db.query(models.Album).\
             filter(models.Album.id.in_(id_list)).\
+            options(joinedload(self.model.songs)).\
+            options(joinedload(self.model.artists)).\
             all()
-            # options(joinedload(self.model.songs)).\
-            # options(joinedload(self.model.artists)).\
         id_map = {t.id: t for t in albums}
         albums = [id_map[n] for n in id_list]
         if current_user:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
-            for i in range(len(albums)):
-                add_like_attr(current_db_user, [albums[i]], "albums")
-                # add_like_attr(current_db_user, albums[i].songs, "songs")
-                # add_like_attr(current_db_user, albums[i].artists, "artists")
+            add_like_attr(current_db_user, albums)
         return albums
     
     def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
         albums = db.query(self.model).\
-            options(joinedload(self.model.songs)).\
+            options(joinedload(self.model.songs).joinedload(models.Song.album)).\
+            options(joinedload(self.model.songs).joinedload(models.Song.artists)).\
+            options(joinedload(self.model.songs).joinedload(models.Song.tags)).\
             options(joinedload(self.model.artists)).\
             offset(skip).\
             limit(limit).\
             all()   
         if current_user:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
-            for i in range(len(albums)):
-                add_like_attr(current_db_user, [albums[i]], "albums")
-                add_like_attr(current_db_user, albums[i].songs, "songs")
-                add_like_attr(current_db_user, albums[i].artists, "artists")
+            add_like_attr(current_db_user, albums)
         return albums
 
 
@@ -73,7 +88,7 @@ class AlbumCRUD(ItemBase):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         if current_user:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
-            add_like_attr(current_db_user, db_user.albums, "albums")
+            add_like_attr(current_db_user, db_user.albums)
         return db_user.albums
 
 crud_album = AlbumCRUD(models.Album, models.UserAlbumLike)
