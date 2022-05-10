@@ -2,8 +2,25 @@ from sqlalchemy.orm import Session, joinedload
 
 from app import models, schemas
 from app.crud.base import ItemBase 
-from app.dependencies import add_like_attr
 from typing import Optional, List
+
+def add_like_attr(user: models.User, songs):
+    liked_songs_id = []
+    liked_albums_id = []
+    liked_artists_id = []
+
+    for liked_song in user.songs:
+        liked_songs_id.append(liked_song.id)
+    for liked_album in user.albums:
+        liked_albums_id.append(liked_album.id)
+    for liked_artist in user.artists:
+        liked_artists_id.append(liked_artist.id)
+    
+    for song in songs:
+        setattr(song, "liked", True) if song.id in liked_songs_id else setattr(song, "liked", False)
+        setattr(song.album, "liked", True) if song.album.id in liked_albums_id else setattr(song.album, "liked", False)
+        for artist in song.artists:
+            setattr(artist, "liked", True) if artist.id in liked_artists_id else setattr(artist, "liked", False)
 
 class SongCRUD(ItemBase):
     def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
@@ -15,9 +32,7 @@ class SongCRUD(ItemBase):
             first()
         if current_user and song:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
-            add_like_attr(current_db_user, [song], "songs")
-            add_like_attr(current_db_user, [song.album], "albums")
-            add_like_attr(current_db_user, song.artists, "artists")
+            add_like_attr(current_db_user, [song])
         return song
 
     def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None, load: Optional[bool] = False):
@@ -31,11 +46,7 @@ class SongCRUD(ItemBase):
         songs = [id_map[n] for n in id_list]
         if current_user:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
-            for i in range(len(songs)):
-                add_like_attr(current_db_user, [songs[i]], "songs")
-                if load:
-                    add_like_attr(current_db_user, [songs[i].album], "albums")
-                    add_like_attr(current_db_user, songs[i].artists, "artists")
+            add_like_attr(current_db_user, songs)
         return songs
 
     def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
@@ -48,10 +59,7 @@ class SongCRUD(ItemBase):
             all()   
         if current_user:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
-            for i in range(len(songs)):
-                add_like_attr(current_db_user, [songs[i]], "songs")
-                add_like_attr(current_db_user, [songs[i].album], "albums")
-                add_like_attr(current_db_user, songs[i].artists, "artists")
+            add_like_attr(current_db_user, songs)
         return songs
 
     def like(self, db: Session, id: int, user: schemas.User):
@@ -76,7 +84,7 @@ class SongCRUD(ItemBase):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         if current_user:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
-            add_like_attr(current_db_user, db_user.songs, "songs")
+            add_like_attr(current_db_user, db_user.songs)
         return db_user.songs
 
 crud_song = SongCRUD(model=models.Song, like_relation=models.UserSongLike)

@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session, joinedload, lazyload
 
 from app import models, schemas
 from typing import Optional, List
-from app.dependencies import add_like_attr
+from app.crud.song import add_like_attr
 
 class TagCRUD():
     def get(self, db: Session, id: int):
@@ -26,8 +26,7 @@ class TagCRUD():
             all()
         if current_user:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
-            for i in range(len(songs)):
-                add_like_attr(current_db_user, [songs[i]], "songs")
+            add_like_attr(current_db_user, songs)
         return songs
 
 crud_tag = TagCRUD()
