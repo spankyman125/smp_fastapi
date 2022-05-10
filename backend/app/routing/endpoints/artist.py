@@ -13,7 +13,8 @@ from app.crud.artist import crud_artist
 
 router = APIRouter()
 
-@router.get("/{id}", response_model=schemas.ArtistLoaded)
+@router.get("/{id}", response_model=schemas.ArtistLoaded, include_in_schema=False)
+@router.get("/{id}/", response_model=schemas.ArtistLoaded)
 def read_artist(
         id: int, 
         db: Session = Depends(dependencies.get_db),
@@ -24,7 +25,8 @@ def read_artist(
         raise HTTPException(status_code=404, detail='Item not found')
     return artist
 
-@router.put("/{id}/like")
+@router.put("/{id}/like", include_in_schema=False)
+@router.put("/{id}/like/")
 def like_artist(
         id: int, 
         db: Session = Depends(dependencies.get_db), 
@@ -35,6 +37,7 @@ def like_artist(
         raise HTTPException(status_code=404, detail='Item not found')
     return crud_artist.like(db, id, current_user)
 
+@router.get("", response_model=List[schemas.ArtistLoaded], include_in_schema=False)
 @router.get("/", response_model=List[schemas.ArtistLoaded])
 def read_artists(
         skip: int = 0, 

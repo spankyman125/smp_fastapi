@@ -8,7 +8,8 @@ from app.crud import user as crud_user
 
 router = APIRouter()
 
-@router.post("/token", response_model=schemas.Token)
+@router.post("/token", response_model=schemas.Token, include_in_schema=False)
+@router.post("/token/", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(dependencies.get_db)):
     user = crud_user.authenticate_user(form_data.username, form_data.password, db)
     if not user:
@@ -26,7 +27,8 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
-@router.post("/token-refresh", response_model=schemas.Token)
+@router.post("/token-refresh", response_model=schemas.Token, include_in_schema=False)
+@router.post("/token-refresh/", response_model=schemas.Token)
 async def refresh_tokens(refresh_token: str, db: Session = Depends(dependencies.get_db)):
     user = db.query(models.User).filter(models.User.refresh_token == refresh_token).first()
     if not user:

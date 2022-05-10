@@ -12,7 +12,8 @@ from app.crud.album import crud_album
 
 router = APIRouter()
 
-@router.get("/{id}", response_model=schemas.AlbumLoaded)
+@router.get("/{id}", response_model=schemas.AlbumLoaded, include_in_schema=False)
+@router.get("/{id}/", response_model=schemas.AlbumLoaded)
 def read_album(
         id: int,
         db: Session = Depends(dependencies.get_db),
@@ -23,7 +24,8 @@ def read_album(
         raise HTTPException(status_code=404, detail='Item not found')
     return album
 
-@router.put("/{id}/like")
+@router.put("/{id}/like", include_in_schema=False)
+@router.put("/{id}/like/")
 def like_album(
         id: int, 
         db: Session = Depends(dependencies.get_db), 
@@ -34,6 +36,7 @@ def like_album(
         raise HTTPException(status_code=404, detail='Item not found')
     return crud_album.like(db, id, current_user)
 
+@router.get("", response_model=List[schemas.AlbumLoaded], include_in_schema=False)
 @router.get("/", response_model=List[schemas.AlbumLoaded])
 def read_albums(
         skip: int = 0,
