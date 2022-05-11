@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Session, joinedload
-
+import random
 from app import models, schemas
 from app.crud.base import ItemBase 
 from typing import Optional, List
+from sqlalchemy import desc
 
 def add_like_attr(user: models.User, albums):
     liked_songs_id = []
@@ -65,6 +66,30 @@ class AlbumCRUD(ItemBase):
             add_like_attr(current_db_user, albums)
         return albums
 
+    def get_random(self, db: Session, limit: int = 10, current_user: Optional[schemas.User] = None):
+        album_count = db.query(self.model).count()
+        random_id_list = random.sample(range(1, album_count), limit)
+        albums = db.query(self.model).\
+            filter(models.Album.id.in_(random_id_list)).\
+            options(joinedload(self.model.songs).joinedload(models.Song.album)).\
+            options(joinedload(self.model.songs).joinedload(models.Song.artists)).\
+            options(joinedload(self.model.songs).joinedload(models.Song.tags)).\
+            options(joinedload(self.model.artists)).\
+            all()   
+        if current_user:
+            current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
+            add_like_attr(current_db_user, albums)
+        return albums
+
+    def get_last_releases(self, db: Session, limit: int = 10, current_user: Optional[schemas.User] = None):
+        albums = db.query(self.model).\
+            order_by(desc(self.model.release_date)).\
+            limit(limit).\
+            all()   
+        if current_user:
+            current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
+            add_like_attr(current_db_user, albums)
+        return albums
 
     def like(self, db: Session, id: int, user: schemas.User):
         like = db.query(self.like_relation).get((user.id, id))

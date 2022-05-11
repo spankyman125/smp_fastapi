@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from .endpoints import artist, test, stream, song, album, user, auth, queue, playlist, search, tags
+from .endpoints import artist, test, stream, song, album, user, auth, queue, playlist, search, tags, home
 
 api_router = APIRouter()
 
@@ -15,7 +15,8 @@ api_router.include_router(user.router_others ,tags=["users/{username}"]  ,prefix
 api_router.include_router(queue.router       ,tags=["users/me/queue"]    ,prefix="/users/me/queue"   )
 api_router.include_router(playlist.router    ,tags=["users/me/playlists"],prefix="/users/me/playlists"   )
 api_router.include_router(search.router      ,tags=["search"]            ,prefix="/search"    )
-api_router.include_router(tags.router        ,tags=["tags"]            ,prefix="/tags"    )
+api_router.include_router(tags.router        ,tags=["tags"]              ,prefix="/tags"    )
+api_router.include_router(home.router        ,tags=["home"]              ,prefix="/home"    )
 
 api_router.include_router(test.router        ,tags=["test"]             ,prefix="/test"    )
 api_router.include_router(stream.router      ,tags=["stream"])

@@ -1,8 +1,10 @@
+from optparse import Option
 from sqlalchemy.orm import Session, joinedload
 
 from app import models, schemas
 from app.crud.base import ItemBase 
 from typing import Optional, List
+import random
 
 def add_like_attr(user: models.User, songs):
     liked_songs_id = []
@@ -49,14 +51,18 @@ class SongCRUD(ItemBase):
             add_like_attr(current_db_user, songs)
         return songs
 
-    def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
-        songs =  db.query(self.model).\
-            options(joinedload(self.model.album)).\
-            options(joinedload(self.model.artists)).\
-            options(joinedload(self.model.tags)).\
-            offset(skip).\
-            limit(limit).\
-            all()   
+    def get_random(self, db:Session, limit: int = 10, current_user: Optional[schemas.User] = None, tags=None):
+        song_count = db.query(self.model).count()
+        random_id_list = random.sample(range(1, song_count), limit)
+        if tags:
+            songs = db.query(models.Song).\
+                    filter(models.Song.tags.any(models.Tag.name.in_(tags))).\
+                    filter(models.Song.id.in_(random_id_list)).\
+                    all()
+        else:
+            songs = db.query(models.Song).\
+                    filter(models.Song.id.in_(random_id_list)).\
+                    all()
         if current_user:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
             add_like_attr(current_db_user, songs)
