@@ -1,5 +1,5 @@
 from app import models, schemas
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload
 from fastapi import HTTPException
 from typing import List
 from app.crud.song import add_like_attr
@@ -12,8 +12,8 @@ class QueueCRUD():
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         queue = db.query(models.Song).\
             filter(models.Song.id.in_(db_user.queue.songs)).\
-            options(joinedload(models.Song.album)).\
-            options(joinedload(models.Song.artists))
+            options(selectinload(models.Song.album)).\
+            options(selectinload(models.Song.artists))
         id_map = {t.id: t for t in queue}
         songs = [id_map[n] for n in db_user.queue.songs]
         add_like_attr(db_user, songs)
@@ -65,8 +65,8 @@ class QueueCRUD():
         if db_user.queue.current_position != -1:
             current_song = db.query(models.Song).\
                 filter_by(id=db_user.queue.songs[db_user.queue.current_position]).\
-                options(joinedload(models.Song.album)).\
-                options(joinedload(models.Song.artists)).\
+                options(selectinload(models.Song.album)).\
+                options(selectinload(models.Song.artists)).\
                 first()
             add_like_attr(db_user, [current_song])
             return current_song # возвращать только подтверждение?
@@ -82,8 +82,8 @@ class QueueCRUD():
             db.commit()
             current_song = db.query(models.Song).\
                 filter_by(id=db_user.queue.songs[db_user.queue.current_position]).\
-                options(joinedload(models.Song.album)).\
-                options(joinedload(models.Song.artists)).\
+                options(selectinload(models.Song.album)).\
+                options(selectinload(models.Song.artists)).\
                 first()
             add_like_attr(db_user, [current_song])
             return current_song # возвращать только подтверждение?
@@ -99,8 +99,8 @@ class QueueCRUD():
             db.commit()
             current_song = db.query(models.Song).\
                 filter_by(id=db_user.queue.songs[db_user.queue.current_position]).\
-                options(joinedload(models.Song.album)).\
-                options(joinedload(models.Song.artists)).\
+                options(selectinload(models.Song.album)).\
+                options(selectinload(models.Song.artists)).\
                 first()
             add_like_attr(db_user, [current_song])
             return current_song # возвращать только подтверждение?

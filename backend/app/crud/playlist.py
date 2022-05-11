@@ -1,7 +1,7 @@
 import uuid, os
 from calendar import c
 from app import models, main, schemas
-from sqlalchemy.orm import joinedload, Session
+from sqlalchemy.orm import selectinload, Session
 from fastapi import HTTPException, UploadFile, File
 from typing import List
 from app.crud.song import add_like_attr
@@ -24,8 +24,8 @@ class PlaylistCRUD():
             if playlist.songs:
                 playlist_joined = db.query(models.Song).\
                     filter(models.Song.id.in_(playlist.songs)).\
-                    options(joinedload(models.Song.album)).\
-                    options(joinedload(models.Song.artists))
+                    options(selectinload(models.Song.album)).\
+                    options(selectinload(models.Song.artists))
                 id_map = {t.id: t for t in playlist_joined}
                 songs = [id_map[n] for n in playlist.songs]
                 add_like_attr(db_user, songs)

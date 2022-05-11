@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, selectinload
 import random
 from app import models, schemas
 from app.crud.base import ItemBase 
@@ -30,8 +30,8 @@ def add_like_attr(user: models.User, artists):
 class ArtistCRUD(ItemBase):
     def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
         artist = db.query(self.model).\
-            options(joinedload(self.model.songs)).\
-            options(joinedload(self.model.albums)).\
+            options(selectinload(self.model.songs)).\
+            options(selectinload(self.model.albums)).\
             filter(self.model.id == id).\
             first()
         if current_user and artist:
@@ -41,8 +41,8 @@ class ArtistCRUD(ItemBase):
     
     def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
         artists = db.query(self.model).\
-            options(joinedload(self.model.songs)).\
-            options(joinedload(self.model.albums)).\
+            options(selectinload(self.model.songs)).\
+            options(selectinload(self.model.albums)).\
             offset(skip).\
             limit(limit).\
             all() 
