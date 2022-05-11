@@ -33,7 +33,7 @@ class Song(Base):
     title = Column(String)
     duration = Column(Interval)
     file_url = Column(String)
-    cover_url = Column(String, default="/static/images/song_covers/default.png") # /static/images/song_covers/ (ссылаться на альбом если нету?, или сингл=альбом)
+    cover_url = Column(String, default="/static/images/song_covers/default.png") 
 
     album_id = Column(Integer, ForeignKey("albums.id"))
 
@@ -49,7 +49,7 @@ class Album(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
     release_date = Column(Date)
-    cover_url = Column(String, default="/static/images/album_covers/default.png") # /static/images/album_covers/
+    cover_url = Column(String, default="/static/images/album_covers/default.png") 
 
     songs = relationship("Song", back_populates="album")
     artists = relationship("Artist", secondary="album_artist", back_populates="albums")
@@ -61,7 +61,7 @@ class Artist(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
-    cover_url = Column(String, default="/static/images/artist_covers/default.png") #/static/images/artist_covers/
+    cover_url = Column(String, default="/static/images/artist_covers/default.png")
 
     songs = relationship("Song", secondary="song_artist", back_populates="artists")
     albums = relationship("Album", secondary="album_artist", back_populates="artists")
@@ -83,7 +83,7 @@ class Playlist(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     songs = Column(postgresql.ARRAY(Integer))
-    cover_url = Column(String, default="/static/images/playlist_covers/default.png") # /static/images/playlist_covers/
+    cover_url = Column(String, default="/static/images/playlist_covers/default.png")
     user_id = Column(Integer, ForeignKey("users.id"))
 
     user = relationship("User", back_populates="playlists")
