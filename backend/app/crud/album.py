@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, selectinload
 import random
 from app import models, schemas
 from app.crud.base import ItemBase 
@@ -30,8 +30,8 @@ def add_like_attr(user: models.User, albums):
 class AlbumCRUD(ItemBase):
     def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
         album = db.query(self.model).\
-            options(joinedload(self.model.songs)).\
-            options(joinedload(self.model.artists)).\
+            options(selectinload(self.model.songs)).\
+            options(selectinload(self.model.artists)).\
             filter(self.model.id == id).\
             first()
         if current_user and album:
@@ -42,8 +42,8 @@ class AlbumCRUD(ItemBase):
     def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None):
         albums = db.query(models.Album).\
             filter(models.Album.id.in_(id_list)).\
-            options(joinedload(self.model.songs)).\
-            options(joinedload(self.model.artists)).\
+            options(selectinload(self.model.songs)).\
+            options(selectinload(self.model.artists)).\
             all()
         id_map = {t.id: t for t in albums}
         albums = [id_map[n] for n in id_list]
@@ -54,10 +54,10 @@ class AlbumCRUD(ItemBase):
     
     def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
         albums = db.query(self.model).\
-            options(joinedload(self.model.songs).joinedload(models.Song.album)).\
-            options(joinedload(self.model.songs).joinedload(models.Song.artists)).\
-            options(joinedload(self.model.songs).joinedload(models.Song.tags)).\
-            options(joinedload(self.model.artists)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.album)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.artists)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.tags)).\
+            options(selectinload(self.model.artists)).\
             offset(skip).\
             limit(limit).\
             all()   
@@ -71,10 +71,10 @@ class AlbumCRUD(ItemBase):
         random_id_list = random.sample(range(1, album_count), limit)
         albums = db.query(self.model).\
             filter(models.Album.id.in_(random_id_list)).\
-            options(joinedload(self.model.songs).joinedload(models.Song.album)).\
-            options(joinedload(self.model.songs).joinedload(models.Song.artists)).\
-            options(joinedload(self.model.songs).joinedload(models.Song.tags)).\
-            options(joinedload(self.model.artists)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.album)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.artists)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.tags)).\
+            options(selectinload(self.model.artists)).\
             all()   
         if current_user:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()

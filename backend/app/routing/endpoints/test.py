@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import load_only
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload
 from typing import Optional, List
 from app import index_conf, security
 from app import dependencies, filldata, models, schemas
@@ -92,7 +92,7 @@ async def update_artists_docs(db: Session = Depends(dependencies.get_db)):
 
 @router.get("/update-songs-docs/")
 async def update_songs_docs(db: Session = Depends(dependencies.get_db)):
-    songs = db.query(models.Song).options(load_only("id","title","duration")).options(joinedload(models.Song.tags)).all()
+    songs = db.query(models.Song).options(load_only("id","title","duration")).options(selectinload(models.Song.tags)).all()
     operations=[]
     for song in songs:
         operations.append({
