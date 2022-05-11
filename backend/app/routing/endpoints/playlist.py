@@ -1,3 +1,4 @@
+from urllib import response
 import uuid
 from typing import List
 from fastapi import APIRouter, Depends, File, UploadFile
@@ -25,8 +26,8 @@ def read_playlist(
     ):
     return crud_playlist.get(db, current_user, id)
 
-@router.post("/{id}/upload-image", include_in_schema=False)
-@router.post("/{id}/upload-image/")
+@router.post("/{id}/upload-image", include_in_schema=False, response_model = schemas.PlaylistUpdateImage)
+@router.post("/{id}/upload-image/", response_model = schemas.PlaylistUpdateImage)
 async def upload_playlist_cover(
     id:int,
     file: UploadFile=File(...),
@@ -35,8 +36,8 @@ async def upload_playlist_cover(
 ):
     return await crud_playlist.update_playlist_image(db=db, user=current_user, playlist_id=id, file=file)
 
-@router.post("/{id}/add", include_in_schema=False)
-@router.post("/{id}/add/")
+@router.post("/{id}/add", include_in_schema=False, response_model=schemas.Playlist)
+@router.post("/{id}/add/", response_model=schemas.Playlist)
 def add_song(
         id: int,
         song_id: int,
@@ -45,8 +46,8 @@ def add_song(
     ):
     return crud_playlist.add(db, current_user, song_id, id)
 
-@router.post("/{id}/add-list", include_in_schema=False)
-@router.post("/{id}/add-list/")
+@router.post("/{id}/add-list", include_in_schema=False, response_model=schemas.Playlist)
+@router.post("/{id}/add-list/", response_model=schemas.Playlist)
 def add_songs(
         id: int,
         song_list: List[int],
@@ -55,8 +56,8 @@ def add_songs(
     ):
     return crud_playlist.add_list(db=db, user=current_user, song_list=song_list, playlist_id=id)
 
-@router.post("", include_in_schema=False)
-@router.post("/")
+@router.post("", include_in_schema=False, response_model=schemas.Playlist)
+@router.post("/", response_model=schemas.Playlist)
 def create_playlist(
         name: str,
         db: Session = Depends(dependencies.get_db),
@@ -64,8 +65,8 @@ def create_playlist(
     ):
     return crud_playlist.create(db, current_user, name)
 
-@router.delete("/{id}", include_in_schema=False)
-@router.delete("/{id}/")
+@router.delete("/{id}", include_in_schema=False,  response_model=bool)
+@router.delete("/{id}/", response_model=bool)
 def delete_playlist(
         id: int,
         db: Session = Depends(dependencies.get_db),
@@ -73,8 +74,8 @@ def delete_playlist(
     ):
     return crud_playlist.delete(db, current_user, id)
 
-@router.delete("/{id}/clear", include_in_schema=False)
-@router.delete("/{id}/clear/")
+@router.delete("/{id}/clear", include_in_schema=False, response_model=schemas.Playlist)
+@router.delete("/{id}/clear/", response_model=schemas.Playlist)
 def clear_playlist(
         id: int,
         db: Session = Depends(dependencies.get_db),
@@ -82,8 +83,8 @@ def clear_playlist(
     ):
     return crud_playlist.clear(db, current_user, id)
 
-@router.delete("/{id}/delete", include_in_schema=False)
-@router.delete("/{id}/delete/")
+@router.delete("/{id}/delete", include_in_schema=False, response_model=schemas.Playlist)
+@router.delete("/{id}/delete/", response_model=schemas.Playlist)
 def remove_song(
         id: int,
         position: int,

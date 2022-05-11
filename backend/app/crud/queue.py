@@ -115,9 +115,13 @@ class QueueCRUD():
         try:
             list = [id_map[n] for n in song_list]
             db_user.queue.songs = song_list
-            db_user.queue.current_position = 0
+            if len(song_list) == 0:
+                db_user.queue.current_position = -1
+            else:                
+                db_user.queue.current_position = 0
             db.commit()
         except:
             raise HTTPException(status_code=400, detail='Wrong id provided')
-        return self.get(db, user)
+        return db_user.queue
+
 crud_queue = QueueCRUD()
