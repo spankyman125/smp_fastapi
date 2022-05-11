@@ -25,8 +25,8 @@ def read_artist(
         raise HTTPException(status_code=404, detail='Item not found')
     return artist
 
-@router.put("/{id}/like", include_in_schema=False)
-@router.put("/{id}/like/")
+@router.put("/{id}/like", include_in_schema=False, response_model=bool)
+@router.put("/{id}/like/", response_model=bool)
 def like_artist(
         id: int, 
         db: Session = Depends(dependencies.get_db), 

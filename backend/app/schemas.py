@@ -87,19 +87,26 @@ class UserAbout(BaseModel):
 
 class Queue(BaseModel):
     current_position: int
-    songs: List[SongLoaded]
+    songs: List[int]
     class Config:
         orm_mode = True
+
+class QueueLoaded(Queue):
+    songs: List[SongLoaded]
 
 class Playlist(BaseModel):
     id: int
     name: str
     cover_url: str
+    songs: Optional[List[int]]
     class Config:
         orm_mode = True
 
 class PlaylistLoaded(Playlist):
     songs: List[SongLoaded]
+
+class PlaylistUpdateImage(Playlist):
+    cover_url: str
 
 class Token(BaseModel):
     access_token: str
