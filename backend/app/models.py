@@ -35,7 +35,7 @@ class Song(Base):
     file_url = Column(String)
     cover_url = Column(String, default="/static/images/song_covers/default.png") 
 
-    album_id = Column(Integer, ForeignKey("albums.id"))
+    album_id = Column(Integer, ForeignKey("albums.id"),index=True)
 
     album = relationship("Album", back_populates="songs")
     tags = relationship("Tag", secondary="song_tag", back_populates="songs")
@@ -73,7 +73,7 @@ class Queue(Base):
     id = Column(Integer, primary_key=True)
     songs = Column(postgresql.ARRAY(Integer))
     current_position = Column(Integer)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"),index=True)
 
     user = relationship("User", back_populates="queue")
 
@@ -84,7 +84,7 @@ class Playlist(Base):
     name = Column(String)
     songs = Column(postgresql.ARRAY(Integer))
     cover_url = Column(String, default="/static/images/playlist_covers/default.png")
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(Integer, ForeignKey("users.id"),index=True)
 
     user = relationship("User", back_populates="playlists")
 
@@ -99,39 +99,39 @@ class Tag(Base):
 class SongArtistRelation(Base):
     __tablename__ = "song_artist"
 
-    song_id = Column(Integer, ForeignKey("songs.id"), primary_key=True)
-    artist_id = Column(Integer, ForeignKey("artists.id"), primary_key=True)
+    song_id = Column(Integer, ForeignKey("songs.id"), primary_key=True,index=True)
+    artist_id = Column(Integer, ForeignKey("artists.id"), primary_key=True,index=True)
 
 
 class AlbumArtistRelation(Base):
     __tablename__ = "album_artist"
 
-    album_id = Column(Integer, ForeignKey("albums.id"), primary_key=True)
-    artist_id = Column(Integer, ForeignKey("artists.id"), primary_key=True)
+    album_id = Column(Integer, ForeignKey("albums.id"), primary_key=True,index=True)
+    artist_id = Column(Integer, ForeignKey("artists.id"), primary_key=True,index=True)
 
 
 class UserSongLike(Base):
     __tablename__ = "user_song"
 
-    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
-    song_id = Column(Integer, ForeignKey("songs.id"), primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True,index=True)
+    song_id = Column(Integer, ForeignKey("songs.id"), primary_key=True,index=True)
 
 
 class UserAlbumLike(Base):
     __tablename__ = "user_album"
 
-    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
-    album_id = Column(Integer, ForeignKey("albums.id"), primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True,index=True)
+    album_id = Column(Integer, ForeignKey("albums.id"), primary_key=True,index=True)
 
 
 class UserArtistLike(Base):
     __tablename__ = "user_artist"
 
-    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
-    artist_id = Column(Integer, ForeignKey("artists.id"), primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True,index=True)
+    artist_id = Column(Integer, ForeignKey("artists.id"), primary_key=True,index=True)
 
 class SongTag(Base):
     __tablename__ = "song_tag"
 
-    song_id = Column(Integer, ForeignKey("songs.id"), primary_key=True)
-    tag_id = Column(Integer, ForeignKey("tags.id"), primary_key=True)
+    song_id = Column(Integer, ForeignKey("songs.id"), primary_key=True,index=True)
+    tag_id = Column(Integer, ForeignKey("tags.id"), primary_key=True,index=True)
