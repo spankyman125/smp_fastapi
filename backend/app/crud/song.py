@@ -36,6 +36,20 @@ class SongCRUD(ItemBase):
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
             add_like_attr(current_db_user, [song])
         return song
+    
+    def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
+        songs =  db.query(self.model).\
+            options(joinedload(self.model.album)).\
+            options(joinedload(self.model.artists)).\
+            options(joinedload(self.model.tags)).\
+            offset(skip).\
+            limit(limit).\
+            all()  
+        if current_user:
+            current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
+            add_like_attr(current_db_user, songs)
+        return songs
+
 
     def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None, load: Optional[bool] = False):
         songs = db.query(models.Song).\
