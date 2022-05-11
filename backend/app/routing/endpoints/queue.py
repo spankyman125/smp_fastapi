@@ -8,8 +8,8 @@ from app.crud.queue import crud_queue
 
 router = APIRouter()
 
-@router.get("", response_model=schemas.Queue, include_in_schema=False)
-@router.get("/", response_model=schemas.Queue)
+@router.get("", response_model=schemas.QueueLoaded, include_in_schema=False)
+@router.get("/", response_model=schemas.QueueLoaded)
 def read_queue(
         db: Session = Depends(dependencies.get_db),
         current_user: schemas.User = Depends(dependencies.get_current_user)
@@ -24,8 +24,8 @@ def read_current(
     ):
     return crud_queue.current(db, current_user)
 
-@router.post("/add", include_in_schema=False)
-@router.post("/add/")
+@router.post("/add", include_in_schema=False, response_model=schemas.Queue)
+@router.post("/add/", response_model=schemas.Queue)
 def add_song_to_queue(
         song_id: int,
         db: Session = Depends(dependencies.get_db),

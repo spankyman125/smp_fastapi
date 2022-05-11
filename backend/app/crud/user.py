@@ -21,10 +21,14 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 def update_user(db: Session, user:schemas.User, user_about: schemas.UserAbout):
     db_user = db.query(models.User).filter_by(id=user.id).first()
-    db_user.name=user_about.name
-    db_user.surname=user_about.surname
-    db_user.about=user_about.about
-    db_user.email=user_about.email
+    if user_about.name:
+        db_user.name=user_about.name
+    if user_about.surname:
+        db_user.surname=user_about.surname
+    if user_about.about:
+        db_user.about=user_about.about
+    if user_about.email:
+        db_user.email=user_about.email
     db.commit()
     db.flush()
     db.refresh(db_user)

@@ -1,5 +1,5 @@
-from sqlalchemy.orm import Session, joinedload
-
+from sqlalchemy.orm import Session, selectinload
+import random
 from app import models, schemas
 from app.crud.base import ItemBase 
 from typing import Optional, List
@@ -30,8 +30,8 @@ def add_like_attr(user: models.User, artists):
 class ArtistCRUD(ItemBase):
     def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
         artist = db.query(self.model).\
-            options(joinedload(self.model.songs)).\
-            options(joinedload(self.model.albums)).\
+            options(selectinload(self.model.songs)).\
+            options(selectinload(self.model.albums)).\
             filter(self.model.id == id).\
             first()
         if current_user and artist:
@@ -41,8 +41,8 @@ class ArtistCRUD(ItemBase):
     
     def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
         artists = db.query(self.model).\
-            options(joinedload(self.model.songs)).\
-            options(joinedload(self.model.albums)).\
+            options(selectinload(self.model.songs)).\
+            options(selectinload(self.model.albums)).\
             offset(skip).\
             limit(limit).\
             all() 
@@ -57,6 +57,17 @@ class ArtistCRUD(ItemBase):
             all()
         id_map = {t.id: t for t in artists}
         artists = [id_map[n] for n in id_list]
+        if current_user:
+            current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
+            add_like_attr(current_db_user, artists)
+        return artists
+
+    def get_random(self, db:Session, limit: int = 10, current_user: Optional[schemas.User] = None):
+        artist_count = db.query(self.model).count()
+        random_id_list = random.sample(range(1, artist_count), limit)
+        artists = db.query(models.Artist).\
+            filter(models.Artist.id.in_(random_id_list)).\
+            all()
         if current_user:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
             add_like_attr(current_db_user, artists)

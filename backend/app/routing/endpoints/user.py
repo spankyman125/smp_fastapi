@@ -50,8 +50,8 @@ def read_artists_by_self(
 ): 
     return crud_artist.get_liked(db=db, user=current_user, current_user=current_user)
 
-@router_me.get("/me/songs", response_model=List[schemas.Song], include_in_schema=False)
-@router_me.get("/me/songs/", response_model=List[schemas.Song])
+@router_me.get("/me/songs", response_model=List[schemas.SongLoaded], include_in_schema=False)
+@router_me.get("/me/songs/", response_model=List[schemas.SongLoaded])
 def read_songs_by_self(
     current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
@@ -89,8 +89,8 @@ def read_artists_by_username(
         raise HTTPException(status_code=404, detail='User not found')
     return crud_artist.get_liked(db=db, user=db_user,current_user=current_user)
 
-@router_others.get("/{username}/songs", response_model=List[schemas.Song], include_in_schema=False)
-@router_others.get("/{username}/songs/", response_model=List[schemas.Song])
+@router_others.get("/{username}/songs", response_model=List[schemas.SongLoaded], include_in_schema=False)
+@router_others.get("/{username}/songs/", response_model=List[schemas.SongLoaded])
 async def read_songs_by_username(
         username: str,
         db: Session = Depends(dependencies.get_db),

@@ -83,8 +83,8 @@ async def search_albums(
     else:
         return []
 
-@router.get("/songs", response_model=List[schemas.Song], include_in_schema=False)
-@router.get("/songs/", response_model=List[schemas.Song])
+@router.get("/songs", response_model=List[schemas.SongLoaded], include_in_schema=False)
+@router.get("/songs/", response_model=List[schemas.SongLoaded])
 async def search_songs(
     name: str,
     db: Session = Depends(dependencies.get_db),

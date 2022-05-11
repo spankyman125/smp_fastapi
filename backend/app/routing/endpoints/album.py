@@ -24,8 +24,8 @@ def read_album(
         raise HTTPException(status_code=404, detail='Item not found')
     return album
 
-@router.put("/{id}/like", include_in_schema=False)
-@router.put("/{id}/like/")
+@router.put("/{id}/like", include_in_schema=False, response_model=bool)
+@router.put("/{id}/like/", response_model=bool)
 def like_album(
         id: int, 
         db: Session = Depends(dependencies.get_db), 
