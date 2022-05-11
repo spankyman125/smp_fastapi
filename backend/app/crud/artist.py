@@ -30,7 +30,9 @@ def add_like_attr(user: models.User, artists):
 class ArtistCRUD(ItemBase):
     def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
         artist = db.query(self.model).\
-            options(selectinload(self.model.songs)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.album)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.artists)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.tags)).\
             options(selectinload(self.model.albums)).\
             filter(self.model.id == id).\
             first()
@@ -41,7 +43,9 @@ class ArtistCRUD(ItemBase):
     
     def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
         artists = db.query(self.model).\
-            options(selectinload(self.model.songs)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.album)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.artists)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.tags)).\
             options(selectinload(self.model.albums)).\
             offset(skip).\
             limit(limit).\
@@ -53,6 +57,10 @@ class ArtistCRUD(ItemBase):
 
     def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None):
         artists = db.query(models.Artist).\
+            options(selectinload(self.model.songs).selectinload(models.Song.album)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.artists)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.tags)).\
+            options(selectinload(self.model.albums)).\
             filter(models.Artist.id.in_(id_list)).\
             all()
         id_map = {t.id: t for t in artists}
@@ -66,6 +74,10 @@ class ArtistCRUD(ItemBase):
         artist_count = db.query(self.model).count()
         random_id_list = random.sample(range(1, artist_count), limit)
         artists = db.query(models.Artist).\
+            options(selectinload(self.model.songs).selectinload(models.Song.album)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.artists)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.tags)).\
+            options(selectinload(self.model.albums)).\
             filter(models.Artist.id.in_(random_id_list)).\
             all()
         if current_user:
