@@ -3,7 +3,7 @@ import random
 from app import models, schemas
 from app.crud.base import ItemBase 
 from typing import Optional, List
-import asyncio
+
 def add_like_attr(user: models.User, artists):
     liked_songs_id = []
     liked_albums_id = []
@@ -49,7 +49,7 @@ class ArtistCRUD(ItemBase):
             options(selectinload(self.model.albums)).\
             offset(skip).\
             limit(limit).\
-            all()
+            all() 
         if current_user:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
             add_like_attr(current_db_user, artists)

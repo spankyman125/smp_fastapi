@@ -30,7 +30,9 @@ def add_like_attr(user: models.User, albums):
 class AlbumCRUD(ItemBase):
     async def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
         album = db.query(self.model).\
-            options(selectinload(self.model.songs)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.album)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.artists)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.tags)).\
             options(selectinload(self.model.artists)).\
             filter(self.model.id == id).\
             first()
@@ -42,7 +44,9 @@ class AlbumCRUD(ItemBase):
     async def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None):
         albums = db.query(models.Album).\
             filter(models.Album.id.in_(id_list)).\
-            options(selectinload(self.model.songs)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.album)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.artists)).\
+            options(selectinload(self.model.songs).selectinload(models.Song.tags)).\
             options(selectinload(self.model.artists)).\
             all()
         id_map = {t.id: t for t in albums}
