@@ -107,3 +107,35 @@ async def update_songs_docs(db: Session = Depends(dependencies.get_db)):
             "tags":[tag.name for tag in song.tags]
         })
     return await main.es_client.bulk(operations=operations)
+
+
+@router.get("/update-pics/")
+async def update_pics(db: Session = Depends(dependencies.get_db)):
+    albums = db.query(models.Album)
+    songs = db.query(models.Song)
+    artists = db.query(models.Artist)
+    i=0
+    for album in albums:
+        album.cover_url=f"/static/images/album_covers/{i}.png"
+        if i==100:
+            i=0
+        else:
+            i+=1
+
+    for song in songs:
+        song.cover_url=f"/static/images/song_covers/{i}.png"
+        if i==100:
+            i=0
+        else:
+            i+=1
+    
+    for artist in artists:
+        artist.cover_url=f"/static/images/artist_covers/{i}.png"
+        if i==100:
+            i=0
+        else:
+            i+=1
+    db.commit()
+    # artists = db.query(models.Artist).    
+    # songs = db.query(models.Song).    
+    pass
