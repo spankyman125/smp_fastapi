@@ -25,7 +25,7 @@ def add_like_attr(user: models.User, songs):
             setattr(artist, "liked", True) if artist.id in liked_artists_id else setattr(artist, "liked", False)
 
 class SongCRUD(ItemBase):
-    def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
+    async def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
         song = db.query(self.model).\
             options(selectinload(self.model.album)).\
             options(selectinload(self.model.artists)).\
@@ -37,7 +37,7 @@ class SongCRUD(ItemBase):
             add_like_attr(current_db_user, [song])
         return song
     
-    def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
+    async def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
         songs =  db.query(self.model).\
             options(selectinload(self.model.album)).\
             options(selectinload(self.model.artists)).\
@@ -51,7 +51,7 @@ class SongCRUD(ItemBase):
         return songs
 
 
-    def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None, load: Optional[bool] = False):
+    async def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None, load: Optional[bool] = False):
         songs = db.query(models.Song).\
             filter(models.Song.id.in_(id_list))
         if load:
@@ -65,7 +65,7 @@ class SongCRUD(ItemBase):
             add_like_attr(current_db_user, songs)
         return songs
 
-    def get_random(self, db:Session, limit: int = 10, current_user: Optional[schemas.User] = None, tags=None):
+    async def get_random(self, db:Session, limit: int = 10, current_user: Optional[schemas.User] = None, tags=None):
         song_count = db.query(self.model).count()
         random_id_list = random.sample(range(1, song_count), limit)
         if tags:
@@ -82,7 +82,7 @@ class SongCRUD(ItemBase):
             add_like_attr(current_db_user, songs)
         return songs
 
-    def like(self, db: Session, id: int, user: schemas.User):
+    async def like(self, db: Session, id: int, user: schemas.User):
         like = db.query(self.like_relation).get((user.id, id))
         if like:
             db.delete(like)
@@ -95,7 +95,7 @@ class SongCRUD(ItemBase):
             db.refresh(like)
             return True 
 
-    def get_liked(
+    async def get_liked(
         self,
         db:Session,
         user: schemas.User,

@@ -3,7 +3,7 @@ import random
 from app import models, schemas
 from app.crud.base import ItemBase 
 from typing import Optional, List
-
+import asyncio
 def add_like_attr(user: models.User, artists):
     liked_songs_id = []
     liked_albums_id = []
@@ -28,7 +28,7 @@ def add_like_attr(user: models.User, artists):
 
 
 class ArtistCRUD(ItemBase):
-    def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
+    async def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
         artist = db.query(self.model).\
             options(selectinload(self.model.songs).selectinload(models.Song.album)).\
             options(selectinload(self.model.songs).selectinload(models.Song.artists)).\
@@ -41,7 +41,7 @@ class ArtistCRUD(ItemBase):
             add_like_attr(current_db_user, [artist])
         return artist
     
-    def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
+    async def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
         artists = db.query(self.model).\
             options(selectinload(self.model.songs).selectinload(models.Song.album)).\
             options(selectinload(self.model.songs).selectinload(models.Song.artists)).\
@@ -49,13 +49,13 @@ class ArtistCRUD(ItemBase):
             options(selectinload(self.model.albums)).\
             offset(skip).\
             limit(limit).\
-            all() 
+            all()
         if current_user:
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
             add_like_attr(current_db_user, artists)
         return artists
 
-    def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None):
+    async def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None):
         artists = db.query(models.Artist).\
             options(selectinload(self.model.songs).selectinload(models.Song.album)).\
             options(selectinload(self.model.songs).selectinload(models.Song.artists)).\
@@ -70,7 +70,7 @@ class ArtistCRUD(ItemBase):
             add_like_attr(current_db_user, artists)
         return artists
 
-    def get_random(self, db:Session, limit: int = 10, current_user: Optional[schemas.User] = None):
+    async def get_random(self, db:Session, limit: int = 10, current_user: Optional[schemas.User] = None):
         artist_count = db.query(self.model).count()
         random_id_list = random.sample(range(1, artist_count), limit)
         artists = db.query(models.Artist).\
@@ -98,7 +98,7 @@ class ArtistCRUD(ItemBase):
             db.refresh(like)
             return True 
 
-    def get_liked(
+    async def get_liked(
         self,
         db:Session,
         user: schemas.User,

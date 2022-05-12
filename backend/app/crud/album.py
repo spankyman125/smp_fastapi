@@ -28,7 +28,7 @@ def add_like_attr(user: models.User, albums):
                 setattr(artist, "liked", True) if artist.id in liked_artists_id else setattr(artist, "liked", False)
 
 class AlbumCRUD(ItemBase):
-    def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
+    async def get(self, db: Session, id: int, current_user: Optional[schemas.User] = None):
         album = db.query(self.model).\
             options(selectinload(self.model.songs)).\
             options(selectinload(self.model.artists)).\
@@ -39,7 +39,7 @@ class AlbumCRUD(ItemBase):
             add_like_attr(current_db_user, [album])
         return album
 
-    def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None):
+    async def get_list(self, db:Session, id_list: List[int], current_user: Optional[schemas.User] = None):
         albums = db.query(models.Album).\
             filter(models.Album.id.in_(id_list)).\
             options(selectinload(self.model.songs)).\
@@ -52,7 +52,7 @@ class AlbumCRUD(ItemBase):
             add_like_attr(current_db_user, albums)
         return albums
     
-    def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
+    async def get_all(self, db: Session, skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
         albums = db.query(self.model).\
             options(selectinload(self.model.songs).selectinload(models.Song.album)).\
             options(selectinload(self.model.songs).selectinload(models.Song.artists)).\
@@ -66,7 +66,7 @@ class AlbumCRUD(ItemBase):
             add_like_attr(current_db_user, albums)
         return albums
 
-    def get_random(self, db: Session, limit: int = 10, current_user: Optional[schemas.User] = None):
+    async def get_random(self, db: Session, limit: int = 10, current_user: Optional[schemas.User] = None):
         album_count = db.query(self.model).count()
         random_id_list = random.sample(range(1, album_count), limit)
         albums = db.query(self.model).\
@@ -81,7 +81,7 @@ class AlbumCRUD(ItemBase):
             add_like_attr(current_db_user, albums)
         return albums
 
-    def get_last_releases(self, db: Session, limit: int = 10, current_user: Optional[schemas.User] = None):
+    async def get_last_releases(self, db: Session, limit: int = 10, current_user: Optional[schemas.User] = None):
         albums = db.query(self.model).\
             order_by(desc(self.model.release_date)).\
             limit(limit).\
@@ -104,7 +104,7 @@ class AlbumCRUD(ItemBase):
             db.refresh(like)
             return True 
 
-    def get_liked(
+    async def get_liked(
         self, 
         db:Session, 
         user: schemas.User, 

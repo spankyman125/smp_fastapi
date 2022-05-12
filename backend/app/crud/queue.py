@@ -8,7 +8,7 @@ class QueueCRUD():
     def __init__(self):
         pass
 
-    def get(self, db, user: schemas.User):
+    async def get(self, db, user: schemas.User):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         queue = db.query(models.Song).\
             filter(models.Song.id.in_(db_user.queue.songs)).\
@@ -24,7 +24,7 @@ class QueueCRUD():
         }
         return result
 
-    def add(self, db, user: schemas.User, id: int):
+    async def add(self, db, user: schemas.User, id: int):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         if bool(db.query(models.Song.id).filter_by(id=id).first()):            
             if db_user.queue.current_position == -1:
@@ -36,7 +36,7 @@ class QueueCRUD():
         else:
             raise HTTPException(status_code=400, detail='Wrong song id')
 
-    def delete(self, db, user: schemas.User, position: int):
+    async def delete(self, db, user: schemas.User, position: int):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         if db_user.queue.current_position == -1:
             raise HTTPException(status_code=400, detail='Queue is empty')
@@ -53,14 +53,14 @@ class QueueCRUD():
         else:
             raise HTTPException(status_code=400, detail='Wrong position')
 
-    def clear(self, db, user: schemas.User):
+    async def clear(self, db, user: schemas.User):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         db_user.queue.songs = []
         db_user.queue.current_position = -1
         db.commit()
         return db_user.queue # возвращать только подтверждение?
 
-    def current(self, db, user: schemas.User):
+    async def current(self, db, user: schemas.User):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         if db_user.queue.current_position != -1:
             current_song = db.query(models.Song).\
@@ -73,7 +73,7 @@ class QueueCRUD():
         else:
             raise HTTPException(status_code=400, detail='Queue is empty')
 
-    def next(self, db, user: schemas.User):
+    async def next(self, db, user: schemas.User):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         if db_user.queue.current_position == -1:
             raise HTTPException(status_code=400, detail='Queue is empty')
@@ -90,7 +90,7 @@ class QueueCRUD():
         else:
             raise HTTPException(status_code=400, detail='No next track')
 
-    def prev(self, db, user: schemas.User):
+    async def prev(self, db, user: schemas.User):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         if db_user.queue.current_position == -1:
             raise HTTPException(status_code=400, detail='Queue is empty')
@@ -107,7 +107,7 @@ class QueueCRUD():
         else:
             raise HTTPException(status_code=400, detail='No previous track')
 
-    def replace(self, db, user: schemas.User, song_list):
+    async def replace(self, db, user: schemas.User, song_list):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
         check = db.query(models.Song).\
             filter(models.Song.id.in_(song_list))
