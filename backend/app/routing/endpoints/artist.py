@@ -35,7 +35,7 @@ async def like_artist(
     artist = await crud_artist.get(db, id, current_user)
     if artist is None:
         raise HTTPException(status_code=404, detail='Item not found')
-    return crud_artist.like(db, id, current_user)
+    return await crud_artist.like(db, id, current_user)
 
 @router.get("", response_model=List[schemas.ArtistLoaded], include_in_schema=False)
 @router.get("/", response_model=List[schemas.ArtistLoaded])

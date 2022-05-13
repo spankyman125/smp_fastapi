@@ -34,7 +34,7 @@ async def like_album(
     album = await crud_album.get(db, id, current_user)
     if album is None:
         raise HTTPException(status_code=404, detail='Item not found')
-    return crud_album.like(db, id, current_user)
+    return await crud_album.like(db, id, current_user)
 
 @router.get("", response_model=List[schemas.AlbumLoaded], include_in_schema=False)
 @router.get("/", response_model=List[schemas.AlbumLoaded])

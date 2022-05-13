@@ -85,7 +85,7 @@ class ArtistCRUD(ItemBase):
             add_like_attr(current_db_user, artists)
         return artists
 
-    def like(self, db: Session, id: int, user: schemas.User):
+    async def like(self, db: Session, id: int, user: schemas.User):
         like = db.query(self.like_relation).get((user.id, id))
         if like:
             db.delete(like)

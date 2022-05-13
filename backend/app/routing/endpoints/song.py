@@ -31,7 +31,7 @@ async def like_song(
     song = await crud_song.get(db, id, current_user)
     if song is None:
         raise HTTPException(status_code=404, detail='Item not found')
-    return crud_song.like(db, id, current_user)
+    return await crud_song.like(db, id, current_user)
 
 @router.get("", response_model=List[schemas.SongLoaded], include_in_schema=False)
 @router.get("/", response_model=List[schemas.SongLoaded])

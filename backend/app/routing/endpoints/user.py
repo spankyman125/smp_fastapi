@@ -21,7 +21,7 @@ def read_user_self(
     current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
 ):
-    db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
+    db_user = crud_user.get_user(db, username=current_user.username)
     return db_user
 
 @router_me.post("/me", response_model=schemas.UserAbout, include_in_schema=False)
@@ -44,27 +44,27 @@ async def upload_avatar(
 
 @router_me.get("/me/artists", response_model=List[schemas.Artist], include_in_schema=False)
 @router_me.get("/me/artists/", response_model=List[schemas.Artist])
-def read_artists_by_self(
+async def read_artists_by_self(
     current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
 ): 
-    return crud_artist.get_liked(db=db, user=current_user, current_user=current_user)
+    return await crud_artist.get_liked(db=db, user=current_user, current_user=current_user)
 
 @router_me.get("/me/songs", response_model=List[schemas.SongLoaded], include_in_schema=False)
 @router_me.get("/me/songs/", response_model=List[schemas.SongLoaded])
-def read_songs_by_self(
+async def read_songs_by_self(
     current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
 ):
-    return crud_song.get_liked(db=db, user=current_user, current_user=current_user)
+    return await crud_song.get_liked(db=db, user=current_user, current_user=current_user)
 
 @router_me.get("/me/albums", response_model=List[schemas.Album], include_in_schema=False)
 @router_me.get("/me/albums/", response_model=List[schemas.Album])
-def read_albums_by_self(
+async def read_albums_by_self(
     current_user: schemas.User = Depends(dependencies.get_current_user),
     db: Session = Depends(dependencies.get_db)
 ):
-    return crud_album.get_liked(db=db, user=current_user, current_user=current_user)
+    return await crud_album.get_liked(db=db, user=current_user, current_user=current_user)
 
 @router_others.get("/{username}", response_model=schemas.UserAll, include_in_schema=False)
 @router_others.get("/{username}/", response_model=schemas.UserAll)
@@ -79,7 +79,7 @@ def read_user_by_username(
 
 @router_others.get("/{username}/artists", response_model=List[schemas.Artist], include_in_schema=False)
 @router_others.get("/{username}/artists/", response_model=List[schemas.Artist])
-def read_artists_by_username(
+async def read_artists_by_username(
         username: str,
         db: Session = Depends(dependencies.get_db),
         current_user: schemas.User = Depends(dependencies.get_current_user_optional)
@@ -87,7 +87,7 @@ def read_artists_by_username(
     db_user = crud_user.get_user(db, username=username)
     if db_user is None:
         raise HTTPException(status_code=404, detail='User not found')
-    return crud_artist.get_liked(db=db, user=db_user,current_user=current_user)
+    return await crud_artist.get_liked(db=db, user=db_user,current_user=current_user)
 
 @router_others.get("/{username}/songs", response_model=List[schemas.SongLoaded], include_in_schema=False)
 @router_others.get("/{username}/songs/", response_model=List[schemas.SongLoaded])
@@ -99,11 +99,11 @@ async def read_songs_by_username(
     db_user = crud_user.get_user(db, username=username)
     if db_user is None:
         raise HTTPException(status_code=404, detail='User not found')
-    return crud_song.get_liked(db=db, user=db_user, current_user=current_user)
+    return await crud_song.get_liked(db=db, user=db_user, current_user=current_user)
 
 @router_others.get("/{username}/albums", response_model=List[schemas.Album], include_in_schema=False)
 @router_others.get("/{username}/albums/", response_model=List[schemas.Album])
-def read_albums_by_username(
+async def read_albums_by_username(
         username: str,
         db: Session = Depends(dependencies.get_db),
         current_user: schemas.User = Depends(dependencies.get_current_user_optional)
@@ -111,7 +111,7 @@ def read_albums_by_username(
     db_user = crud_user.get_user(db, username=username)
     if db_user is None:
         raise HTTPException(status_code=404, detail='User not found')
-    return crud_album.get_liked(db=db, user=db_user,current_user=current_user)
+    return await crud_album.get_liked(db=db, user=db_user,current_user=current_user)
 
 @router.post("", response_model=schemas.UserAll, include_in_schema=False)
 @router.post("/", response_model=schemas.UserAll)
