@@ -17,7 +17,7 @@ async def get_random_albums(
     current_user: schemas.User = Depends(dependencies.get_current_user_optional),
     limit: Optional[int]=10
 ):
-    return crud_album.get_random(db, limit, current_user)
+    return await crud_album.get_random(db, limit, current_user)
 
 @router.get("/random/song", response_model=List[schemas.SongLoaded], include_in_schema=False)
 @router.get("/random/songs/", response_model=List[schemas.SongLoaded])
@@ -27,7 +27,7 @@ async def get_random_songs_by_tags(
     limit: Optional[int]=10,
     tags: Optional[List[str]]=Query([])
 ):
-    return crud_song.get_random(db, limit, current_user,tags)
+    return await crud_song.get_random(db, limit, current_user,tags)
 
 @router.get("/random/artists", response_model=List[schemas.Artist], include_in_schema=False)
 @router.get("/random/artists/", response_model=List[schemas.Artist])
@@ -36,7 +36,7 @@ async def get_random_artists(
     current_user: schemas.User = Depends(dependencies.get_current_user_optional),
     limit: Optional[int]=10
 ):
-    return crud_artist.get_random(db, limit, current_user)
+    return await crud_artist.get_random(db, limit, current_user)
     
 
 @router.get("/last-album-releases", response_model=List[schemas.Album], include_in_schema=False)
@@ -46,5 +46,5 @@ async def get_last_album_releases(
     current_user: schemas.User = Depends(dependencies.get_current_user_optional),
     limit: Optional[int]=10
 ):
-    return crud_album.get_last_releases(db, limit, current_user)
+    return await crud_album.get_last_releases(db, limit, current_user)
     

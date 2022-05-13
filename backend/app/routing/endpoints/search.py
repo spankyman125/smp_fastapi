@@ -38,7 +38,7 @@ async def search_artists(
         ids=[]
         for hit in result["hits"]["hits"]:
             ids.append(int(hit["_id"]))
-        return crud_artist.get_list(db=db, id_list=ids, current_user=current_user)
+        return await crud_artist.get_list(db=db, id_list=ids, current_user=current_user)
     else:
         return []
 
@@ -79,7 +79,7 @@ async def search_albums(
         ids=[]
         for hit in result["hits"]["hits"]:
             ids.append(int(hit["_id"]))
-        return crud_album.get_list(db=db, id_list=ids, current_user=current_user)
+        return await crud_album.get_list(db=db, id_list=ids, current_user=current_user)
     else:
         return []
 
@@ -119,6 +119,6 @@ async def search_songs(
         ids=[]
         for hit in result["hits"]["hits"]:
             ids.append(int(hit["_id"]))
-        return crud_song.get_list(db=db, id_list=ids, current_user=current_user)
+        return await crud_song.get_list(db=db, id_list=ids, current_user=current_user)
     else:
         return []

@@ -5,20 +5,20 @@ from typing import Optional, List
 from app.crud.song import add_like_attr
 
 class TagCRUD():
-    def get(self, db: Session, id: int):
+    async def get(self, db: Session, id: int):
         return "by_id"
     
-    def get(self, db: Session, name: str):
+    async def get(self, db: Session, name: str):
         return "by_name"
     
-    def get_all(self, db: Session):
+    async def get_all(self, db: Session):
         tags = db.query(models.Tag).all()
         return tags
 
-    def get_songs(self, db: Session, tag: str):
+    async def get_songs(self, db: Session, tag: str):
         return "songs_by_tag"
 
-    def get_songs(self, db: Session, tags: List[str], skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
+    async def get_songs(self, db: Session, tags: List[str], skip: int = 0, limit: int = 100, current_user: Optional[schemas.User] = None):
         songs = db.query(models.Song).\
             filter(models.Song.tags.any(models.Tag.name.in_(tags))).\
             offset(skip).\
