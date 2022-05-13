@@ -98,7 +98,7 @@ class Playlist(BaseModel):
     id: int
     name: str
     cover_url: str
-    songs: Optional[List[int]]
+    # songs: Optional[List[int]]
     class Config:
         orm_mode = True
 
