@@ -42,8 +42,8 @@ async def search_artists(
     else:
         return []
 
-@router.get("/albums", response_model=List[schemas.Album], include_in_schema=False)
-@router.get("/albums/", response_model=List[schemas.Album])
+@router.get("/albums", response_model=List[schemas.AlbumLoaded], include_in_schema=False)
+@router.get("/albums/", response_model=List[schemas.AlbumLoaded])
 async def search_albums(
     name: str,
     db: Session = Depends(dependencies.get_db),
@@ -69,7 +69,10 @@ async def search_albums(
                         "match": {
                             "title":name
                         }
-                    }
+                    },
+                    "should": { 
+                        "match": { "artists": name } 
+                    },
                 }
             }
         },
@@ -99,22 +102,23 @@ async def search_songs(
         body= {
             "query":  {
                 "bool": {
-                    "filter":
+                    "filter": 
                         (({"range": {"duration": {"gte": duration_from,"lte": duration_to,"format":"epoch_second"}}},
                         {"terms": {"tags":tags}}) 
                         if tags else
                         ({"range": {"duration": { "gte": duration_from,"lte": duration_to,"format":"epoch_second"}}})),
                     "must": {
-                        "match": {
-                            "title":name
-                        }
-                    }
+                        "match": { "title":name }
+                    },
+                    "should": [
+                        { "match": { "album":name } },
+                        { "match": { "artists":name } },
+                    ]
                 }
             }
         },
         filter_path="hits.hits._id",
         size=limit)
-    
     if result:
         ids=[]
         for hit in result["hits"]["hits"]:
