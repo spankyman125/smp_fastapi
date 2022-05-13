@@ -59,6 +59,9 @@ mappings_albums = {
         "release_date": {
             "type": "date",
             "format": "yyyy-MM-dd"
+        },
+        "artists": {
+            "type": "text"
         }
     }
 }
@@ -83,5 +86,11 @@ mappings_songs = {
         "tags": {
             "type": "keyword"
         },
+        "album": {
+            "type":"text"
+        },
+        "artists": {
+            "type": "text"
+        }
     }
 }

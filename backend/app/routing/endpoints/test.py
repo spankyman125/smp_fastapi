@@ -59,7 +59,7 @@ async def create_default_indexes():
 
 @router.get("/update-albums-docs/")
 async def update_albums_docs(db: Session = Depends(dependencies.get_db)):
-    albums = db.query(models.Album).options(load_only("id","title","release_date")).all()
+    albums = db.query(models.Album).all()
     operations=[]
     for album in albums:
         operations.append({
@@ -71,6 +71,7 @@ async def update_albums_docs(db: Session = Depends(dependencies.get_db)):
         operations.append({
             "title":album.title,
             "release_date":album.release_date,
+            "artists": [artist.name for artist in album.artists]
         })
     return await main.es_client.bulk(operations=operations)
 
@@ -92,7 +93,7 @@ async def update_artists_docs(db: Session = Depends(dependencies.get_db)):
 
 @router.get("/update-songs-docs/")
 async def update_songs_docs(db: Session = Depends(dependencies.get_db)):
-    songs = db.query(models.Song).options(load_only("id","title","duration")).options(selectinload(models.Song.tags)).all()
+    songs = db.query(models.Song).all()
     operations=[]
     for song in songs:
         operations.append({
@@ -104,7 +105,9 @@ async def update_songs_docs(db: Session = Depends(dependencies.get_db)):
         operations.append({
             "title":song.title,
             "duration":song.duration.total_seconds(),
-            "tags":[tag.name for tag in song.tags]
+            "tags":[tag.name for tag in song.tags],
+            "album": song.album.title,
+            "artists": [artist.name for artist in song.artists],
         })
     return await main.es_client.bulk(operations=operations)
 
