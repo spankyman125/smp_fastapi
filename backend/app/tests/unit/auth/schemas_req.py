@@ -12,6 +12,9 @@ class AlbumLikeRequired(schemas.Album):
 class ArtistLikeRequired(schemas.Artist):
     liked: bool
 
+class SongTaggedLikeRequired(SongLikeRequired):
+    tags: List[schemas.Tag]
+
 class SongLoadedLikeRequired(schemas.SongLoaded):
     album: AlbumLikeRequired
     artists: List[ArtistLikeRequired]
