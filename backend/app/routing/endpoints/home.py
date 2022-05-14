@@ -19,7 +19,7 @@ async def get_random_albums(
 ):
     return await crud_album.get_random(db, limit, current_user)
 
-@router.get("/random/song", response_model=List[schemas.SongLoaded], include_in_schema=False)
+@router.get("/random/songs", response_model=List[schemas.SongLoaded], include_in_schema=False)
 @router.get("/random/songs/", response_model=List[schemas.SongLoaded])
 async def get_random_songs_by_tags(
     db: Session = Depends(dependencies.get_db),
