@@ -8,3 +8,4 @@ python-jose[cryptography]==2.0.0
 passlib[bcrypt]==1.7.4
 gunicorn==20.1.0
 elasticsearch[async]==8.1.3
+fastapi-responses==0.2.1

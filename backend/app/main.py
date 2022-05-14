@@ -4,9 +4,12 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.routing.router import api_router
+from fastapi_responses import custom_openapi
+
 APP_PATH=pathlib.Path(__file__).parent.resolve()
 
 app = FastAPI()
+app.openapi = custom_openapi(app)
 es_client = AsyncElasticsearch("http://elastic:9200")
 
 origins = ["*"]

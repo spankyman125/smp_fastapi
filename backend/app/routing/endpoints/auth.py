@@ -14,9 +14,8 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     user = crud_user.authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
+            status_code=401,
+            detail="Incorrect username or password"
         )
     refresh_token = security.create_refresh_token()
     user.refresh_token = refresh_token
@@ -33,9 +32,8 @@ async def refresh_tokens(refresh_token: str, db: Session = Depends(dependencies.
     user = db.query(models.User).filter(models.User.refresh_token == refresh_token).first()
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token",
-            headers={"WWW-Authenticate": "Bearer"},
+            status_code=401,
+            detail="Invalid refresh token"
         )
     refresh_token_new = security.create_refresh_token()
     user.refresh_token = refresh_token_new
