@@ -10,8 +10,8 @@ from typing import List, Optional
 
 router = APIRouter()
 
-@router.get("", include_in_schema=False)
-@router.get("/")
+@router.get("", response_model=List[schemas.Tag], include_in_schema=False)
+@router.get("/", response_model=List[schemas.Tag])
 async def get_tags(
         db: Session = Depends(dependencies.get_db),
         current_user: schemas.User = Depends(dependencies.get_current_user_optional)
