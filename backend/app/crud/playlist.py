@@ -43,7 +43,11 @@ class PlaylistCRUD():
 
     async def get_all(self, db: Session, user:schemas.User):
         db_user = db.query(models.User).filter(models.User.username == user.username).first()
-        return db_user.playlists
+        user_playlist_id_list = [playlist.id for playlist in db_user.playlists]
+        playlists = []
+        for id in user_playlist_id_list:
+            playlists.append(await self.get(db,user,id))
+        return playlists
 
     async def update_playlist_image(self, db: Session, user:models.User, playlist_id: int, file: UploadFile=File(...)):
         playlist = db.query(models.Playlist).filter_by(id=playlist_id).first()
