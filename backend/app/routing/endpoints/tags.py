@@ -18,8 +18,8 @@ async def get_tags(
     ):
     return await crud_tag.get_all(db)
 
-@router.get("/songs", response_model=List[schemas.SongTagged], include_in_schema=False)
-@router.get("/songs/", response_model=List[schemas.SongTagged])
+@router.get("/songs", response_model=List[schemas.SongLoaded], include_in_schema=False)
+@router.get("/songs/", response_model=List[schemas.SongLoaded])
 async def get_songs_by_tags(
         skip: int = 0, 
         limit: int = 100, 

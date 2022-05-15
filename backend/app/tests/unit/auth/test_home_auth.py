@@ -19,7 +19,7 @@ async def test_home_random_albums_200():
     headers = {"Authorization":"Bearer " + ACCESS_TOKEN}
     response = await client.get("/home/random/albums", headers=headers)
     assert response.status_code == 200
-    assert parse_obj_as(List[schemas_req.AlbumLikeRequired], response.json())
+    assert parse_obj_as(List[schemas_req.AlbumLoadedLikeRequired], response.json())
 
 @pytest.mark.anyio
 async def test_home_random_songs_200():
@@ -33,11 +33,11 @@ async def test_home_random_artists_200():
     headers = {"Authorization":"Bearer " + ACCESS_TOKEN}
     response = await client.get("/home/random/artists", headers=headers)
     assert response.status_code == 200
-    assert parse_obj_as(List[schemas_req.ArtistLikeRequired], response.json())
+    assert parse_obj_as(List[schemas_req.ArtistLoadedLikeRequired], response.json())
 
 @pytest.mark.anyio
 async def test_home_last_album_releases():
     headers = {"Authorization":"Bearer " + ACCESS_TOKEN}
     response = await client.get("/home/last-album-releases", headers=headers)
     assert response.status_code == 200
-    assert parse_obj_as(List[schemas_req.AlbumLikeRequired], response.json())
+    assert parse_obj_as(List[schemas_req.AlbumLoadedLikeRequired], response.json())

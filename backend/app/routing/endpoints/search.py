@@ -10,8 +10,8 @@ from app.crud.artist import  crud_artist
 
 router = APIRouter()
 
-@router.get("/artists", response_model=List[schemas.Artist], include_in_schema=False)
-@router.get("/artists/", response_model=List[schemas.Artist])
+@router.get("/artists", response_model=List[schemas.ArtistLoaded], include_in_schema=False)
+@router.get("/artists/", response_model=List[schemas.ArtistLoaded])
 async def search_artists(
     name: str,
     db: Session = Depends(dependencies.get_db),
