@@ -9,6 +9,7 @@ from app import dependencies, filldata, models, schemas
 from app import main
 from fastapi.security import OAuth2PasswordRequestForm
 from app.crud import user as crud_user
+import random
 
 router = APIRouter()
 
@@ -142,3 +143,68 @@ async def update_pics(db: Session = Depends(dependencies.get_db)):
     # artists = db.query(models.Artist).    
     # songs = db.query(models.Song).    
     pass
+
+@router.get("/random-users-with-album-likes/")
+async def random_users(db: Session = Depends(dependencies.get_db)):
+    users =[]
+    for i in range(1,100):
+        users.append(models.User(password_hash=f"pass{i}", username=f"user{i}"))
+    db.add_all(users) 
+    db.commit()
+
+    user_album=[]
+    for user in users:
+        random_relations = random.sample(range(1, 100), random.randint(1,20))
+        for rel in random_relations:
+            user_album.append(
+                models.UserAlbumLike(user_id=user.id, album_id=rel)
+            )
+    db.add_all(user_album)
+    db.commit()
+    # return await crud_user.update_albums_recomendations(db: Session = Depends(dependencies.get_db))
+
+@router.get("/update-album-recomendations/")
+async def update_recomendations(db: Session = Depends(dependencies.get_db)):
+    users = db.query(models.User).offset(2).limit(100).all()
+    db.query(models.AlbumRelations).delete()
+    db.commit()
+    for user in users:
+        print(f"{user.username}")
+        for i in range(len(user.albums)):
+            for j in range(i+1,len(user.albums)):
+                if i < j:
+                    # print(f"{user.albums[i].id}:{user.albums[j].id}")
+                    rel = db.query(models.AlbumRelations).get((user.albums[i].id,user.albums[j].id)) 
+                    if rel:
+                        rel.score = rel.score+1
+                        db.commit()
+                        db.flush()
+                        pass
+                    else:
+                        db.add(                        
+                            models.AlbumRelations(
+                                id1=user.albums[i].id,
+                                id2=user.albums[j].id,
+                                score=1,
+                            ))
+                        db.commit()
+                        db.flush()
+                else:
+                    # print(f"{user.albums[i].id}:{user.albums[j].id}")
+                    rel = db.query(models.AlbumRelations).get((user.albums[j].id,user.albums[i].id)) 
+                    if rel:
+                        rel.score = rel.score+1
+                        db.commit()
+                        db.flush()
+                        pass
+                    else:
+                        db.add(                        
+                            models.AlbumRelations(
+                                id1=user.albums[j].id,
+                                id2=user.albums[i].id,
+                                score=1,
+                            ))
+                        db.commit()
+                        db.flush()
+
+

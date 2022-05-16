@@ -8,7 +8,7 @@ from app import schemas
 from app import dependencies
 # from .endpoint_item import album_endpoint
 from app.crud.album import crud_album
-
+from sqlalchemy import or_
 
 router = APIRouter()
 
@@ -45,3 +45,26 @@ async def read_albums(
         current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
     return await crud_album.get_all(db, skip, limit, current_user)
+
+@router.get("/{id}/recommend", response_model=List[schemas.AlbumLoaded], include_in_schema=False)
+@router.get("/{id}/recommend/", response_model=List[schemas.AlbumLoaded])
+async def recommend_albums(
+        id:int,
+        skip: int = 0,
+        limit: int = 10,
+        db: Session = Depends(dependencies.get_db),
+        current_user: schemas.User = Depends(dependencies.get_current_user_optional)
+    ):
+    results = db.query(models.AlbumRelations).\
+        filter(or_(models.AlbumRelations.id1==id,models.AlbumRelations.id2==id)).\
+        order_by(models.AlbumRelations.score.desc()).\
+        limit(4).\
+        all()
+    albums_id = []
+    for result in results:
+        if result.id1==id:
+            albums_id.append(result.id2)
+        else:
+            albums_id.append(result.id1)
+
+    return await crud_album.get_list(db=db, id_list=albums_id, current_user=current_user)
