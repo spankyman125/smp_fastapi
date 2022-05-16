@@ -135,3 +135,10 @@ class SongTag(Base):
 
     song_id = Column(Integer, ForeignKey("songs.id"), primary_key=True,index=True)
     tag_id = Column(Integer, ForeignKey("tags.id"), primary_key=True,index=True)
+
+class AlbumRelations(Base):
+    __tablename__ = "album_relations"
+
+    id1 = Column(Integer, ForeignKey("albums.id"), primary_key=True,index=True)
+    id2 = Column(Integer, ForeignKey("albums.id"), primary_key=True,index=True)
+    score = Column(Integer)
