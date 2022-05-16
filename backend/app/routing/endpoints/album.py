@@ -1,4 +1,5 @@
 from typing import List
+from unittest import result
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
@@ -55,16 +56,4 @@ async def recommend_albums(
         db: Session = Depends(dependencies.get_db),
         current_user: schemas.User = Depends(dependencies.get_current_user_optional)
     ):
-    results = db.query(models.AlbumRelations).\
-        filter(or_(models.AlbumRelations.id1==id,models.AlbumRelations.id2==id)).\
-        order_by(models.AlbumRelations.score.desc()).\
-        limit(4).\
-        all()
-    albums_id = []
-    for result in results:
-        if result.id1==id:
-            albums_id.append(result.id2)
-        else:
-            albums_id.append(result.id1)
-
-    return await crud_album.get_list(db=db, id_list=albums_id, current_user=current_user)
+    return await crud_album.get_recommendation(db, id, skip, limit, current_user)

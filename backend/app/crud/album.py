@@ -3,7 +3,7 @@ import random
 from app import models, schemas
 from app.crud.base import ItemBase 
 from typing import Optional, List
-from sqlalchemy import desc
+from sqlalchemy import desc, or_
 
 def add_like_attr(user: models.User, albums):
     liked_songs_id = []
@@ -84,6 +84,22 @@ class AlbumCRUD(ItemBase):
             current_db_user = db.query(models.User).filter(models.User.username == current_user.username).first()
             add_like_attr(current_db_user, albums)
         return albums
+    
+    async def get_recommendation(self, db: Session, id, skip: int = 0, limit: int = 5, current_user: Optional[schemas.User] = None):
+        results = db.query(models.AlbumRelations).\
+            filter(or_(models.AlbumRelations.id1==id,models.AlbumRelations.id2==id)).\
+            order_by(models.AlbumRelations.score.desc()).\
+            offset(skip).\
+            limit(limit).\
+            all()
+        albums_id = []
+        for result in results:
+            if result.id1==id:
+                albums_id.append(result.id2)
+            else:
+                albums_id.append(result.id1)
+
+        return await self.get_list(db=db, id_list=albums_id, current_user=current_user)
 
     async def get_last_releases(self, db: Session, limit: int = 10, current_user: Optional[schemas.User] = None):
         albums = db.query(self.model).\
