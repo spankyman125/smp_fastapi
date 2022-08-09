@@ -44,3 +44,10 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
+    
+  nginx:
+    image: nginx
+    ports:
+      - "4444:80"
+    volumes:
+      - "./backend/app:/usr/share/nginx/html"

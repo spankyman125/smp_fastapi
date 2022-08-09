@@ -60,3 +60,10 @@ services:
       ELASTICSEARCH_HOSTS: http://elastic:9200
     ports:
       - 5601:5601
+  
+  nginx:
+    image: nginx
+    ports:
+      - "4444:80"
+    volumes:
+      - "./backend/app:/usr/share/nginx/html"
