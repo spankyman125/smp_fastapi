@@ -63,6 +63,7 @@ services:
   
   nginx:
     image: nginx
+    restart: always
     ports:
       - "4444:80"
     volumes:
