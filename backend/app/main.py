@@ -6,10 +6,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routing.router import api_router
 from fastapi_responses import custom_openapi
 
-APP_PATH=pathlib.Path(__file__).parent.resolve()
+APP_PATH = pathlib.Path(__file__).parent.resolve()
 
-app = FastAPI()
-app.openapi = custom_openapi(app)
+app = FastAPI(
+    title="SMP_API",
+    description="An API for SMP application",
+    version="0.2.0",
+    docs_url='/api/docs',
+    redoc_url='/api/redoc',
+    openapi_url='/api/openapi.json'
+)
+# app.openapi = custom_openapi(app)
 es_client = AsyncElasticsearch("http://elastic:9200")
 
 origins = ["*"]
@@ -22,12 +29,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.on_event("shutdown")
 async def app_shutdown():
     await es_client.close()
 
-app.mount("/static/images", StaticFiles(directory="app/static/images"), name="static_images")
-app.mount("/static/css", StaticFiles(directory="app/static/css"), name="static_css")
-app.mount("/static/js", StaticFiles(directory="app/static/js"), name="static_js")
 app.include_router(api_router)
-

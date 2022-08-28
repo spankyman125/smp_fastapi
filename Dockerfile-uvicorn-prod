@@ -1,6 +1,0 @@
-FROM python:3.9
-WORKDIR /container
-COPY ./requirements-prod.txt /container/requirements-prod.txt
-COPY ./start.sh /container/start.sh
-RUN pip install --no-cache-dir --upgrade -r /container/requirements-prod.txt
-CMD ["bash", "./start.sh"]

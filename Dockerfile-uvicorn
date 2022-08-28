@@ -1,0 +1,7 @@
+FROM python:3.9
+WORKDIR /container
+COPY ./requirements.txt /container/requirements.txt
+COPY ./startGunicorn.sh /container/startGunicorn.sh
+RUN pip install --no-cache-dir --upgrade -r /container/requirements.txt
+CMD ["bash", "./startGunicorn.sh"]
+EXPOSE 80

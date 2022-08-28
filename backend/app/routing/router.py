@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-from .endpoints import artist, test, stream, song, album, user, auth, queue, playlist, search, tags, home
+from .endpoints import artist, test, song, album, user, auth, queue, playlist, search, tags, home
 
-api_router = APIRouter()
+api_router = APIRouter(prefix="/api")
 
 api_router.include_router(auth.router        ,tags=["auth"]              ,prefix="/auth"    )
 api_router.include_router(artist.router      ,tags=["artists"]           ,prefix="/artists" )
@@ -19,4 +19,4 @@ api_router.include_router(tags.router        ,tags=["tags"]              ,prefix
 api_router.include_router(home.router        ,tags=["home"]              ,prefix="/home"    )
 
 api_router.include_router(test.router        ,tags=["test"]             ,prefix="/test"    )
-api_router.include_router(stream.router      ,tags=["stream"])
+# api_router.include_router(stream.router      ,tags=["stream"])

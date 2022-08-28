@@ -11,16 +11,16 @@ from app.database import engine
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token", auto_error=True)
 oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="auth/token", auto_error=False)
 
-def add_like_attr(user: models.User, objs_array, type):
-    temp = objs_array
-    liked_ids = []
-    for i in range(len(getattr(user, type))):
-        liked_ids.append(getattr(user, type)[i].id)
-    for n in range(len(temp)):
-        if temp[n].id in liked_ids:
-            setattr(temp[n], "liked", True)
-        else:
-            setattr(temp[n], "liked", False)
+# def add_like_attr(user: models.User, objs_array, type):
+#     temp = objs_array
+#     liked_ids = []
+#     for i in range(len(getattr(user, type))):
+#         liked_ids.append(getattr(user, type)[i].id)
+#     for n in range(len(temp)):
+#         if temp[n].id in liked_ids:
+#             setattr(temp[n], "liked", True)
+#         else:
+#             setattr(temp[n], "liked", False)
 
 def get_db():
     db = Session(bind=engine)
