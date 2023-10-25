@@ -1,6 +1,6 @@
 **/__pycache__/
 *.mp3
-*.png
+# *.png
 
 /certs/
 .env
